@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.pdf
+*.Rds
+*.jpg
+counts_combined_summed.csv
+/infercnv_out
+/output
+*.rds
+*.xlsx
+wies_glass_validatie
