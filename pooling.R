@@ -12,7 +12,7 @@ agg_spec_pooled <- function() {
   # colnames(counts) <- rownames(agg_object@assays$RNA@cells@.Data)
   
   
-  counts <- read.csv("counts_combined_summed.csv")
+  counts <- read.csv("counts_combined_summed_all.csv")
   rownames(counts) <- counts$X
   counts$X <- NULL
   object <- CreateSeuratObject(counts)
@@ -119,31 +119,30 @@ agg_spec_pooled <- function() {
   # if (!dir.exists(dirs[i])) {
   #   dir.create(dirs[i], recursive = TRUE)
   # }
-  write.csv(spec_tau, file = file.path("output/celltypes/combined", "spec_prop.zscore_tau.csv"))
-  write.csv(specificity_scores, file = file.path("output/celltypes/combined", "spec_bayes.csv"))
-  write.csv(vst_counts, file = file.path("output/celltypes/combined", "vst_counts.csv"))
-  png(file = file.path("output/celltypes/combined", "plot_logmaxvstau.png"), width = 960, height = 960)
+  write.csv(spec_tau, file = file.path("output/celltypes/combined_all", "spec_prop.zscore_tau.csv"))
+  write.csv(specificity_scores, file = file.path("output/celltypes/combined_all", "spec_bayes.csv"))
+  write.csv(vst_counts, file = file.path("output/celltypes/combined_all", "vst_counts.csv"))
+  png(file = file.path("output/celltypes/combined_all", "plot_logmaxvstau.png"), width = 960, height = 960)
   print(plotlog)  # Ensure the plot is printed inside the png device
   dev.off()
-  png(file = file.path("output/celltypes/combined", "plot_clus.png"), width = 960, height = 960)
+  png(file = file.path("output/celltypes/combined_all", "plot_clus.png"), width = 960, height = 960)
   print(plotclus)  # Ensure the plot is printed inside the png device
   dev.off()
-  png(file = file.path("output/celltypes/combined", "plot_maxvstau.png"), width = 960, height = 960)
+  png(file = file.path("output/celltypes/combined_all", "plot_maxvstau.png"), width = 960, height = 960)
   print(plot)  # Ensure the plot is printed inside the png device
   dev.off()
   
   formatted_gene_list <- paste(top10$cluster, top10$genes, sep = "\t")
-  writeLines(formatted_gene_list, con = file.path("output/celltypes/combined", "top10_genes_per_cluster.txt"))
+  writeLines(formatted_gene_list, con = file.path("output/celltypes/combined_all", "top10_genes_per_cluster.txt"))
   
   # writeLines(specific_genes, con = file.path("output/celltypes/combined", "specific_genes.txt"))
-  write.csv(specific_genes_celltype, file = file.path("output/celltypes/combined", "spec_gene_celltype.csv"))
+  # write.csv(specific_genes_celltype, file = file.path("output/celltypes/combined", "spec_gene_celltype.csv"))
+  write.csv(markers, file = file.path("output/celltypes/combined_all", "DESeq_output.csv"))
   
-  cat("Files saved successfully in:", "output/celltypes/combined", "\n")
+  cat("Files saved successfully in:", "output/celltypes/combined_all", "\n")
   
 }  
 agg_spec_pooled()
-
-
 
 
 
@@ -180,3 +179,10 @@ posterior_probs <- function(celltype_expression, mean, var) {
   posterior <- likelihood * prior
   return(posterior)
 }
+
+
+
+
+
+
+

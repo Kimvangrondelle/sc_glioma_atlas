@@ -175,8 +175,8 @@ files <- list.files(path= "output/bolleboom/", pattern = "*.rds")
 out_dirs <- list.dirs(path = "output/celltypes/bolleboom")[- 1] 
 agg_celltype(files, out_dirs)
 
-files <- list.files(path= "output/hijfte/", pattern = "*y.rds")
-out_dirs <- list.dirs(path = "output/celltypes/hijfte")[- 1] [2]
+files <- list.files(path= "output/hijfte/", pattern = "*r.rds")
+out_dirs <- list.dirs(path = "output/celltypes/hijfte")[- 1] [1]
 
 agg_celltype(files, out_dirs)
 

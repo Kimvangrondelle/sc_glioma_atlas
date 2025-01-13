@@ -15,13 +15,13 @@ list_celltypes <- list("sum_Tumor", "sum_Div_tumor", "sum_Oligo", "sum_TAM", "su
                        "sum_Endo", "sum_Astro", "sum_Neuron", "sum_OPC", "sum_Tcell")
 
 
-bulk <- read.csv("counts_combined_summed.csv", row.names = 1)
+bulk <- read.csv("counts_combined_summed_all.csv", row.names = 1)
 bulk <- as.data.frame(bulk)
 
 bulk <- sweep(bulk, 1, rowSums(bulk), FUN = "/")
 
 
-sample <- "yuan/35"  # for example: bolleboom/H243
+sample <- "combined_all"  # for example: bolleboom/H243
 file <- paste0("output/celltypes/", sample ,"/spec_prop.zscore_tau.csv")
 file <- paste0("output/celltypes/combined/spec_tau.csv")
 
@@ -35,20 +35,20 @@ bulk_oligo <- bulk[, "sum_Oligo", drop=FALSE]
 bulk_oligo <- bulk_oligo[order(bulk_oligo$sum_Oligo, decreasing = TRUE), , drop = FALSE]
 bulk_tam <- bulk[, "sum_TAM", drop=FALSE]
 bulk_tam <- bulk_tam[order(bulk_tam$sum_TAM, decreasing = TRUE), , drop = FALSE]
-bulk_tumor <- bulk[, "sum_Tumor", drop=FALSE]
-bulk_tumor <- bulk_tumor[order(bulk_tumor$sum_Tumor, decreasing = TRUE), , drop = FALSE]
-bulk_div <- bulk[, "sum_Div_tumor", drop=FALSE]
-bulk_div <- bulk_div[order(bulk_div$sum_Div_tumor, decreasing = TRUE), , drop = FALSE]
+# bulk_tumor <- bulk[, "sum_Tumor", drop=FALSE]
+# bulk_tumor <- bulk_tumor[order(bulk_tumor$sum_Tumor, decreasing = TRUE), , drop = FALSE]
+# bulk_div <- bulk[, "sum_Div_tumor", drop=FALSE]
+# bulk_div <- bulk_div[order(bulk_div$sum_Div_tumor, decreasing = TRUE), , drop = FALSE]
 bulk_neuron <- bulk[, "sum_Neuron", drop=FALSE]
 bulk_neuron <- bulk_neuron[order(bulk_neuron$sum_Neuron, decreasing = TRUE), , drop = FALSE]
-bulk_opc <- bulk[, "sum_OPC", drop=FALSE]
-bulk_opc <- bulk_opc[order(bulk_opc$sum_OPC, decreasing = TRUE), , drop = FALSE]
+# bulk_opc <- bulk[, "sum_OPC", drop=FALSE]
+# bulk_opc <- bulk_opc[order(bulk_opc$sum_OPC, decreasing = TRUE), , drop = FALSE]
 bulk_endo <- bulk[, "sum_Endo", drop=FALSE]
 bulk_endo <- bulk_endo[order(bulk_endo$sum_Endo, decreasing = TRUE), , drop = FALSE]
-bulk_per <- bulk[, "sum_Per", drop=FALSE]
-bulk_per <- bulk_per[order(bulk_per$sum_Per, decreasing = TRUE), , drop = FALSE]
-bulk_tcell <- bulk[, "sum_Tcell", drop=FALSE]
-bulk_tcell <- bulk_tcell[order(bulk_tcell$sum_Tcell, decreasing = TRUE), , drop = FALSE]
+# bulk_per <- bulk[, "sum_Per", drop=FALSE]
+# bulk_per <- bulk_per[order(bulk_per$sum_Per, decreasing = TRUE), , drop = FALSE]
+# bulk_tcell <- bulk[, "sum_Tcell", drop=FALSE]
+# bulk_tcell <- bulk_tcell[order(bulk_tcell$sum_Tcell, decreasing = TRUE), , drop = FALSE]
 
 # for specificity scores on combined
 combined_astro <- specificity_scores_sample[, "sum_Astro", drop=FALSE] 
@@ -137,7 +137,6 @@ kenzie_end$grand_mean <- as.numeric(kenzie_end$grand_mean)
 kenzie_end <- kenzie_end[order(-kenzie_end$grand_mean), ]
 
 
-print("astro first sum then spec")
 print(length(intersect(head(rownames(kenzie_ast), 200), head(rownames(bulk_astro), 200))))
 print(length(intersect(head(rownames(kenzie_oli), 200), head(rownames(bulk_oligo), 200))))
 print(length(intersect(head(rownames(kenzie_neu), 200), head(rownames(bulk_neuron), 200))))
