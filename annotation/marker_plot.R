@@ -1,4 +1,4 @@
-object <- readRDS(file = "output/hijfte/hijfte-y.rds")
+object <- readRDS(file = "output/diaz_astrooligo/diaz11612_oligo.rds")
 
 library(Seurat)
 library(ggplot2)
@@ -10,8 +10,6 @@ endo <- DotPlot(object, features = c("ABCB1", "CD34", "FLT4", "TIE1", "EGFL7", "
                                      "MECOM", "ANO2", "HSPG2", "BTNL9", "CDA")) + labs(title = "endo")
 per <- DotPlot(object, features = c("CD248", "RGS5", "SLC38A11", "CARMN", "EDNRA", "PLXDC1", "GRM8", "PDGFRB",
                                      "TRPC6", "EBF2", "PRR16", "PRKG1", "C1S", "DCN")) + labs(title = "per")
-# endoper <- DotPlot(object, features = c("MYO1B", "ITGA1", "COBLL1", "EBF1", "ADGRF5", "RBPMS", "SVIL",
-#                                      "SLC38A11", "CARMN", "FLT1")) + labs(title = "endo/per")
 tam <- DotPlot(object, features = c("CD163", "P2RY12", "CD14", "ITGB2", "C1QC", "SLC11A1")) + labs(title = "tam")
 opc <- DotPlot(object, features = c("COL9A1", "PDGFRA", "SMOC1", "CA10", "PCDH15", "LINC02283", "AL512308.1",
                                      "ADARB2", "SCN9A")) + labs(title = "opc")
@@ -21,14 +19,17 @@ astro <- DotPlot(object, features = c("LRRC3B", "GABRG1", "ETNPPL", "LINC00499",
                                      "EMX2", "SPON1", "WIF1", "LINC00943", "GJB6", "ZNF98", "FOXG1", "SLC7A10")) + labs(title = "astro")
 tcell <- DotPlot(object, features = c("CD2", "CD3D", "TRBC2", "TRAC", "ICOS", "GZMA", "SKAP1", "CD96",
                                       "THEMIS", "SLFN12L")) + labs(title = "tcell")
-bcell <- DotPlot(object, features = c("IGLC3", "CD19", "CD79B")) + labs(title = "bcell")
-fibro <- DotPlot(object, features = c("CYP1B1", "OGN", "CLU", "CXCL12")) + labs(title = "fibro")
+# bcell <- DotPlot(object, features = c("IGLC3", "CD19", "CD79B")) + labs(title = "bcell")
+# fibro <- DotPlot(object, features = c("CYP1B1", "OGN", "CLU", "CXCL12")) + labs(title = "fibro")
 
-ggpubr::ggarrange(tumor, dividing, ncol = 2, nrow = 1, align = 'h')
-ggpubr::ggarrange(astro, neuro, ncol = 2, nrow = 1, align = 'h')
-ggpubr::ggarrange(per, tam, ncol = 2, nrow = 1, align = 'h')
-ggpubr::ggarrange(olig, endo, ncol = 2, nrow = 1, align = 'h')
+# ggpubr::ggarrange(tumor, dividing, ncol = 2, nrow = 1, align = 'h')
+# ggpubr::ggarrange(astro, neuro, ncol = 2, nrow = 1, align = 'h')
+# ggpubr::ggarrange(per, tam, ncol = 2, nrow = 1, align = 'h')
+# ggpubr::ggarrange(olig, endo, ncol = 2, nrow = 1, align = 'h')
   
+ggpubr::ggarrange(tumor, astro, olig, endo, neuro, opc, ncol = 4, nrow = 2, align = 'h') 
+
+
 
 print(neuro)
 print(olig)

@@ -21,7 +21,7 @@ print(top_100_genes_per_cluster)
 
 
 
-sample <- "hijfte/pr3"  # for example: bolleboom/H243
+sample <- "combined_all"  # for example: bolleboom/H243
 file <- paste0("output/celltypes/", sample ,"/spec_prop.zscore_tau.csv")
 
 specificity_scores_sample <- read.csv(file, row.names = 1)
@@ -58,6 +58,7 @@ sample_adiv <- specificity_scores_sample[, "ADiv.tumor", drop=FALSE]
 sample_adiv <- head(sample_adiv[order(-sample_adiv$ADiv.tumor), ], 200)
 sample_onot <- specificity_scores_sample[, "O.", drop=FALSE]
 sample_onot <- head(sample_onot[order(-sample_onot$O.), ], 200)
+
 
 print("Astro ")
 print(length(intersect(top_100_genes_per_cluster$sum_Astro$gene, rownames(sample_astro))))
