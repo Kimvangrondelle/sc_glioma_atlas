@@ -13,7 +13,7 @@ top_genes_per_celltype <- sapply(colnames(df), function(celltype) {
 writeLines(top_genes_per_celltype, "top_20_genes_per_celltype.txt")
 
 
-markers <- read.csv("output/celltypes/hijfte/y/DESeq_output.csv", row.names = 1)
+markers <- read.csv("DESeq_output_combined_all.csv", row.names = 1)
 filtered_genes <- rownames(markers)[!grepl("^(RP11|RP3|RP13|RP4|RP5|RP1-)", rownames(markers))]
 markers <- markers[filtered_genes, ]
 
@@ -24,7 +24,9 @@ top_100_genes_per_cluster <- list()
 for (cluster in names(markers_by_cluster)) {
   cluster_markers <- markers_by_cluster[[cluster]]
   cluster_markers_sort <- cluster_markers[order(cluster_markers$p_val), ]
-  top_100_genes_per_cluster[[cluster]] <- noquote(rownames(cluster_markers_sort[1:10, ]))
+  top_100_genes_per_cluster[[cluster]] <- noquote(rownames(cluster_markers_sort[1:20, ]))
 }
+
+writeLines(top_100_genes_per_cluster, "top_20_genes_lowest_pval_deseq.txt")
 
 print(top_100_genes_per_cluster)
