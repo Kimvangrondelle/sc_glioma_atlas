@@ -38,8 +38,12 @@ specificity_matrix <- data[, !colnames(data) %in% c("tau_score_vst","maximum","m
 # 
 # pheatmap(sorted_specificity_matrix, annotation_row = annotation, cluster_rows = FALSE, scale = "row", main = "Gene specificity Heatmap", color = colorRampPalette(c("blue", "white", "red"))(100), show_rownames = FALSE)
 
+c("GDiv.tumor", "Endo", "Per", "TAM", "GTumor", "Oligo", "Astro", "Neuron")
+c("ADiv.tumor", "Oligo", "Per", "TAM", "ATumor")
+c("O?", "Oligo", "OTumor")
+c("sum_GDiv_tumor", "sum_Endo", "sum_Per", "sum_TAM", "sum_GTumor", "sum_Oligo", "sum_OPC", "sum_Tcell", "sum_Astro", "sum_Neuron", "sum_ATumor", "sum_OTumor", "sum_ADiv_tumor", "sum_O_notsure")
 
-own <- read.csv("output/celltypes/combined_all/spec_prop.zscore_tau.csv", row.names = 1)
+own <- read.csv("output/celltypes/hijfte/y/spec_prop.zscore_tau.csv", row.names = 1)
 spread_scores <- own$tau_score_vst
 
 long_own <- own %>%
@@ -50,23 +54,48 @@ long_own <- own %>%
 ggplot(long_own, aes(x = tau_score_vst, y = SpecificityScore, color = CellType)) +
   geom_point(pch=19, alpha=0.5) +
   geom_smooth(method = "loess", se = FALSE) +
-  labs(title = "Scatterplot of Tau vs. Own Specificity Score by Cell Type for all samples combined",
+  ggpubr::stat_cor(method= "spearman")+
+  # scale_y_continuous(limits = c(-250, 250)) +
+  labs(title = "Scatterplot of Tau vs. Own Specificity Score by Cell Type for combined sample",
        x = "Tau score",
-       y = "Specificity Score") +
+       y = "ZPEX score") +
   theme_minimal() 
 
-bayes <- read.csv("output/celltypes/combined_all/spec_bayes.csv", row.names = 1)
+own_scores <- long_own$SpecificityScore
+tau_scores <- long_own$tau_score_vst
+
+combined <- as.data.frame(cbind(own_scores, tau_scores))
+combined <- combined %>% replace(is.na(.), 0)
+cor(combined$own_scores, combined$tau_scores, method = "spearman")
+
+
+
+bayes <- read.csv("output/celltypes/hijfte/y/spec_bayes.csv", row.names = 1)
+bayes <- as.data.frame(-log10(as.matrix(bayes)))
 bayes["tau_score_vst"] <- own$tau_score_vst
 
 long_bayes <- bayes %>%
-  pivot_longer(cols = c("sum_GDiv_tumor", "sum_Endo", "sum_Per", "sum_TAM", "sum_GTumor", "sum_Oligo", "sum_OPC", "sum_Tcell", "sum_Astro", "sum_Neuron", "sum_ATumor", "sum_OTumor", "sum_ADiv_tumor", "sum_O_notsure"), 
+  pivot_longer(cols = c("GDiv.tumor", "Endo", "Per", "TAM", "GTumor", "Oligo", "Astro", "Neuron"), 
                names_to = "CellType", 
                values_to = "SpecificityScore")
 
 ggplot(long_bayes, aes(x = tau_score_vst, y = SpecificityScore, color = CellType)) +
   geom_point(pch=19, alpha=0.5) +
   geom_smooth(method = "loess", se = FALSE) +
-  labs(title = "Scatterplot of Tau vs. Bayes Specificity Score by Cell Type for all samples combined",
+  ggpubr::stat_cor(method= "spearman")+
+  scale_x_continuous(limits = c(-0.15, 0.8))+
+  labs(title = "Scatterplot of Tau vs. Bayes Specificity Score by Cell Type for sample hijfte-y",
        x = "Tau score",
-       y = "Specificity Score") +
+       y = "-log10(Specificity Score Bayes)") +
   theme_minimal()
+
+bayes_scores <- long_bayes$SpecificityScore
+tau_scores <- long_bayes$tau_score_vst
+
+combined <- as.data.frame(cbind(bayes_scores, tau_scores))
+combined <- combined %>% replace(is.na(.), 0)
+
+cor(combined$bayes_scores, combined$tau_scores, method = "spearman")
+
+
+c("sum_GDiv_tumor", "sum_Endo", "sum_Per", "sum_TAM", "sum_GTumor", "sum_Oligo", "sum_OPC", "sum_Tcell", "sum_Astro", "sum_Neuron", "sum_ATumor", "sum_OTumor", "sum_ADiv_tumor", "sum_O_notsure")

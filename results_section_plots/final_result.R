@@ -24,9 +24,12 @@ top_100_genes_per_cluster <- list()
 for (cluster in names(markers_by_cluster)) {
   cluster_markers <- markers_by_cluster[[cluster]]
   cluster_markers_sort <- cluster_markers[order(cluster_markers$p_val), ]
-  top_100_genes_per_cluster[[cluster]] <- noquote(rownames(cluster_markers_sort[1:20, ]))
+  # top_100_genes_per_cluster[[cluster]] <- noquote((cluster_markers_sort$gene[1:20]))
+  top_100_genes_per_cluster[[cluster]] <- cluster_markers_sort[cluster_markers_sort$p_val < 0.01, ]$gene
 }
 
-writeLines(top_100_genes_per_cluster, "top_20_genes_lowest_pval_deseq.txt")
+# writeLines(top_100_genes_per_cluster, "top_20_genes_lowest_pval_deseq.txt")
 
 print(top_100_genes_per_cluster)
+# significant_gene_counts <- sapply(top_100_genes_per_cluster, nrow)
+# print(significant_gene_counts)

@@ -6,7 +6,10 @@ Idents(object) <- rownames(object@assays$RNA@cells)
 
 markers <- FindAllMarkers(object, test.use = "DESeq2", min.cells.group = 0, min.cells.feature = 0,
                           #only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25,
-                          return.thresh = 1.1, logfc.threshold = 0.25, min.pct = 0.1) 
+                          return.thresh = 2, logfc.threshold = 0, min.pct = 0.1) 
+
+write.csv(markers, file = "DESeq2_output_all_genes")
+
 
 markers_by_cluster <- split(markers, markers$cluster)
 top_100_genes_per_cluster <- list()
