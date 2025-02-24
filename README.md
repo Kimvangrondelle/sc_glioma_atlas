@@ -23,7 +23,7 @@ The structure consists of multiple directories and some single R files.
 - Validation: Contains files used for different ways of validation
 - Wies_glass_validatie: contains files used for validation using external data (correlation plot)
 
-
+\\  
 - combining.R was used to combine all count matrices together into one big matrix. 
 - infercnv.R was used to get a copy number profile of each sample. 
 - pooling.R was used to pool the combined sample, to run DESeq2 and to extract the specificity scores. 
