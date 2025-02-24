@@ -1,7 +1,7 @@
+#load in object
 object <- readRDS(file = "output/diaz_astrooligo/diaz11612_oligo.rds")
 
-library(Seurat)
-library(ggplot2)
+# make dotplot per celltype with known marker genes
 neuro <- DotPlot(object, features = c("RBFOX3", "MYT1", "CACNA1B", "WBSCR17", "FAM153B", "FRMPD4", "GRIN1",
                                                          "GABRG3", "MTUS2", "TENM2")) + labs(title = "neuron")
 olig <- DotPlot(object, features = c("TMEM144", "DOCK5", "MBP", "FRMD4B", "ST18", "SHTN1", "PIP4K2A", "ST6GALNAC3",
@@ -19,35 +19,30 @@ astro <- DotPlot(object, features = c("LRRC3B", "GABRG1", "ETNPPL", "LINC00499",
                                      "EMX2", "SPON1", "WIF1", "LINC00943", "GJB6", "ZNF98", "FOXG1", "SLC7A10")) + labs(title = "astro")
 tcell <- DotPlot(object, features = c("CD2", "CD3D", "TRBC2", "TRAC", "ICOS", "GZMA", "SKAP1", "CD96",
                                       "THEMIS", "SLFN12L")) + labs(title = "tcell")
-# bcell <- DotPlot(object, features = c("IGLC3", "CD19", "CD79B")) + labs(title = "bcell")
-# fibro <- DotPlot(object, features = c("CYP1B1", "OGN", "CLU", "CXCL12")) + labs(title = "fibro")
+bcell <- DotPlot(object, features = c("IGLC3", "CD19", "CD79B")) + labs(title = "bcell")
+fibro <- DotPlot(object, features = c("CYP1B1", "OGN", "CLU", "CXCL12")) + labs(title = "fibro")
 
+# # plot 2 or more dotplots next to each other -- used for thesis
 # ggpubr::ggarrange(tumor, dividing, ncol = 2, nrow = 1, align = 'h')
 # ggpubr::ggarrange(astro, neuro, ncol = 2, nrow = 1, align = 'h')
 # ggpubr::ggarrange(per, tam, ncol = 2, nrow = 1, align = 'h')
 # ggpubr::ggarrange(olig, endo, ncol = 2, nrow = 1, align = 'h')
   
-ggpubr::ggarrange(tumor, astro, olig, endo, neuro, opc, ncol = 4, nrow = 2, align = 'h') 
-
-
-
+# show the dotplots -- to analyze
 print(neuro)
 print(olig)
 print(endo)
 print(per)
-
 print(tam)
-# print(opc)
+print(opc)
 print(dividing)
 print(tumor)
 print(astro)
 print(tcell)
 print(fibro)
 
-# 
-# # print(bcell)
-# # print(fibro)
-# 
+
+# # tried to subclassify tumor clusters
 # mesen <- DotPlot(object, idents = c(0, 4, 5, 6, 7, 8, 10), features = c("YKL40", "MET", "CD44", "RELB", "F13A1", "RNF149", "PLAUR", "CASP4", "ILR4", "TRADD")) + labs(title = "mesen")
 # print(mesen)
 # pron <- DotPlot(object, idents = c(0, 4, 5, 6, 7, 8, 10), features = c("PDGFRA", "OLIG2", "DDL3", "SOX2", "NKX2", "UBE2E2", "NKAIN", "DLL3", "EBRB3")) + labs(title = "proneural")
@@ -58,29 +53,3 @@ print(fibro)
 # print(clas)
 # # 
 # 
-# FeaturePlot(object, features = c("PC_1"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_2"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_3"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_4"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_5"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_6"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_7"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_8"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_9"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_10"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_11"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_12"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_13"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_14"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_15"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_16"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_17"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_18"), reduction = "umap")
-# FeaturePlot(object, features = c("PC_19"), reduction = "umap")
-# FeaturePlot(object, features = c("EGFR", "GFAP", "SOX2", "VIM", "PTPRZ1", "TENM1"), reduction = "umap")
-# FeaturePlot(object, features = c("TMEm144", "DOCK5", "MBP", "FRMD4B", "ST18", "SHTN1", "PIP4K2A", "ST6GALNAC3", "MAN2A1",  "OPALIN", "KANK4"), reduction = "umap")
-
-
-# print("1/2_AAACGGGTCGTCGTTC-1" %in% rownames(object@assays$RNA@cells@.Data))
-# print("1/2_AGGCCGTTCTAAGCCA-1" %in% rownames(object@assays$RNA@cells@.Data))
-# print("1/2_CCCATACCACGCGAAA-1" %in% rownames(object@assays$RNA@cells@.Data))

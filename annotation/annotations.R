@@ -1,5 +1,8 @@
+# loading the data
 hijfte <- readRDS(file = "output/hijfte/hijfte-y.rds")
+# making extra metadata column with again cluster numbers
 hijfte$celltype <- as.character((hijfte$seurat_clusters))
+# replace cluster numbers with the cell type
 hijfte$celltype <- ifelse(hijfte$seurat_clusters %in% c(0, 1, 2, 3, 8, 10, 12), "GTumor", hijfte$celltype)
 hijfte$celltype <- ifelse(hijfte$seurat_clusters %in% c(4, 6, 13, 18), "Oligo", hijfte$celltype)
 hijfte$celltype <- ifelse(hijfte$seurat_clusters %in% c(5, 9, 14), "TAM", hijfte$celltype)
@@ -8,12 +11,13 @@ hijfte$celltype <- ifelse(hijfte$seurat_clusters %in% c(15), "Per", hijfte$cellt
 hijfte$celltype <- ifelse(hijfte$seurat_clusters %in% c(16), "Endo", hijfte$celltype)
 hijfte$celltype <- ifelse(hijfte$seurat_clusters %in% c(17), "Astro", hijfte$celltype)
 hijfte$celltype <- ifelse(hijfte$seurat_clusters %in% c(19), "Neuron", hijfte$celltype)
-
+# plots to see original clusters and annotated clusters
 hijfteclus <- DimPlot(hijfte, reduction = "umap", label = TRUE, pt.size = .4, group.by = "seurat_clusters") + labs(title = "clusters Hijfte")
 hijftecell <- DimPlot(hijfte, reduction = "umap", label = TRUE, pt.size = .4, group.by = "celltype") + labs(title = "celltypes Hijfte")
 
 ggsave(filename = "annotation/output/hijfte/hijfte-y-clus.jpg", height = 5, width = 10, plot = hijfteclus, quality = 50)
 ggsave(filename = "annotation/output/hijfte/hijfte-y-cell.jpg", height = 5, width = 10, plot = hijftecell, quality = 50)
+# save object
 saveRDS(hijfte, file = "output/hijfte/hijfte-y.rds")
 
 bolleboom <- readRDS(file = "output/bolleboom/H243.rds")
@@ -306,7 +310,7 @@ saveRDS(diaz11949, file = "output/diaz_astrooligo/diaz11949_oligo.rds")
 
 
 
-#integrated files
+#integrated files -- not used
 vent <- readRDS(file = "output/integrated/vent_processed.rds")
 vent$celltype <- as.character(vent$seurat_clusters)
 vent$celltype <- ifelse(vent$seurat_clusters %in% c(0, 2, 3, 4, 5, 6, 7, 8, 9, 12), "Tumor", vent$celltype)
