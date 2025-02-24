@@ -61,7 +61,7 @@ The data that was used to conduct this research was coming from 5 different stud
 1. "annotation/marker_plot.R" to analyze the expression of marker genes in the found clusters. 
 1. "annotation/annotations.R" to store the annotations of the clusters in the metadata of the objects. 
 1. "infercnv.R" to extract copy number profiles to refine the initial annotations. -- annotations were updated again with "annotation/annotations.R"
-1. "pooling/celltypes" to pool the individual samples on cell type. DESeq2 was run on the pooled object to extract the DE genes per cluster. On the pooled counts, the specificity metrics (from "specificity_scoring_functions.R") were applied to get the specificity scores per gene per cell type. 
+1. "pooling/celltypes" to pool the individual samples on cell type. DESeq2 was run on the pooled object to extract the DE genes per cluster. On the pooled counts, the specificity metrics (from "specificity_scoring_functions.R") were applied to get the specificity scores per gene per cell type. -- Files with scores are stored, together with the 20 genes most differentially expressed per cell type. 
 1. After all samples had been processed individually, "combining.R" was run to pool all samples together into one big matrix. 
-1. "pooling.R" was run to extract the DE genes per cell type in the combined sample, and again the specificity scoring metrics were applied. 
-1. "validation/" and "wies_glass_validation" were used to perform validation analysis on the extracted specificity scores. 
+1. "pooling.R" was run to extract the DE genes per cell type in the combined sample, and again the specificity scoring metrics were applied. Files with scores are stored, together with the 20 genes most differentially expressed per cell type.
+1. "wies_glass_validation" was used to perform validation analysis on the extracted specificity scores. 
