@@ -1,4 +1,5 @@
 # SC Glioma Atlas
+Kim van Grondelle; september 2024 - february 2025
 
 Master thesis SC Glioma Atlas for Bioinformatics and Systems Biology at VU Amsterdam. The research was conducted at the Neurology department of Erasmus MC Rotterdam. 
 
