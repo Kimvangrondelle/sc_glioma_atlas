@@ -1,3 +1,6 @@
+#partly used in final thesis
+#checked DE genes per cell type from combined sample with marker genes found by McKenzie
+
 counts <- read.csv("counts_combined_summed_all.csv")
 rownames(counts) <- counts$X
 counts$X <- NULL
@@ -25,7 +28,7 @@ for (cluster in names(markers_by_cluster)) {
 
 print(top_100_genes_per_cluster)
 
-
+#load in data from McKenzie
 kenzie <- read_excel("validation/41598_2018_27293_MOESM2_ESM.xlsx", sheet = "top_human_specificity")
 kenzie <- as.data.frame(kenzie)
 colnames(kenzie) <- kenzie[2, ]
@@ -33,6 +36,7 @@ kenzie <- kenzie[-2, ]
 
 celltypes_kenzie <- split(kenzie, kenzie$Celltype)
 
+#extract and sort data on grand_mean
 kenzie_ast <- celltypes_kenzie$ast
 rownames(kenzie_ast) <- kenzie_ast$gene 
 kenzie_ast$gene <- NULL 
@@ -64,7 +68,7 @@ kenzie_end$gene <- NULL
 kenzie_end$grand_mean <- as.numeric(kenzie_end$grand_mean)
 kenzie_end <- kenzie_end[order(-kenzie_end$grand_mean), ]
 
-
+#intersect top 100 DE genes with the top n markers from McKenzie
 print(length(intersect(top_100_genes_per_cluster$sum_Astro$gene, head(rownames(kenzie_ast), 500))))
 print(length(intersect(top_100_genes_per_cluster$sum_Oligo$gene, head(rownames(kenzie_oli), 500))))
 print(length(intersect(top_100_genes_per_cluster$sum_Neuron$gene, head(rownames(kenzie_neu), 500))))

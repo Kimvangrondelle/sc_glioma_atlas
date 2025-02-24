@@ -1,9 +1,13 @@
+#not used in final thesis
+#check the overlap of DE genes (combined) per cell type individual samples and the genes that got the highest score 
+
 counts <- read.csv("counts_combined_summed_all.csv")
 rownames(counts) <- counts$X
 counts$X <- NULL
 object <- CreateSeuratObject(counts)
 Idents(object) <- rownames(object@assays$RNA@cells)
 
+#markers combined
 markers <- FindAllMarkers(object, test.use = "DESeq2", min.cells.group = 0, min.cells.feature = 0,
                           #only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25,
                           return.thresh = 2, logfc.threshold = 0, min.pct = 0.1) 
@@ -33,6 +37,7 @@ specificity_scores_sample <- subset(specificity_scores_sample, select= -c(tau_sc
 
 celltypes_in_sample <- list(colnames(specificity_scores_sample))
 
+#get 200 genes with highest scores per cell type for chosen sample
 sample_astro <- specificity_scores_sample[, "Astro", drop=FALSE]
 sample_astro <- head(sample_astro[order(-sample_astro$Astro), , drop = FALSE], 200)
 sample_oligo <- specificity_scores_sample[, "Oligo", drop=FALSE]
@@ -62,7 +67,7 @@ sample_adiv <- head(sample_adiv[order(-sample_adiv$ADiv.tumor), ], 200)
 sample_onot <- specificity_scores_sample[, "O.", drop=FALSE]
 sample_onot <- head(sample_onot[order(-sample_onot$O.), ], 200)
 
-
+#intersect top 200 DE genes per cell type from combined with 200 highest score per cell type (sample)
 print("Astro ")
 print(length(intersect(top_100_genes_per_cluster$sum_Astro$gene, rownames(sample_astro))))
 print("Oligo ")

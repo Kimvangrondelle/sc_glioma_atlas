@@ -1,12 +1,5 @@
-# generate pseudobulk data (subset of combined counts csv)
-# compare specificity scores with pseudobulk profiles 
-  # nadenken of counts misschien moeten worden getransformeerd -- zijn genormalizeerd
-# correlatie is gebaseerd op intersect van genen in sample en all 
-# correlation test -- correlation between specificity scores and pseudobulk profiles
-
-# cor test: spearman-- monotonic    pearson -- lineair
-
-# DE on bulk -- compare DE genes to high scoring genes 
+#not used in final thesis
+# compare specificity scores of cell type in combined sample to same sample in the individual samples
 
 list_celltypes <- list("sum_GTumor", "sum_ATumor", "sum_OTumor", "sum_GDiv tumor", "sum_ADiv tumor", "sum_Oligo", "sum_TAM",
                        "sum_Per", "sum_Endo", "sum_Astro", "sum_Neuron", "sum_OPC", "sum_Tcell", "sum_O_notsure")
@@ -14,13 +7,13 @@ list_celltypes <- list("sum_GTumor", "sum_ATumor", "sum_OTumor", "sum_GDiv tumor
 # list_celltypes <- list("sum_Tumor", "sum_Div_tumor", "sum_Oligo", "sum_TAM", "sum_Per", 
 #                        "sum_Endo", "sum_Astro", "sum_Neuron", "sum_OPC", "sum_Tcell")
 
-
+#prepare combined sample
 pseudobulk <- read.csv("counts_combined_summed_all.csv", row.names = 1)
 pseudobulk <- as.data.frame(pseudobulk)
 
 pseudobulk <- sweep(pseudobulk, 1, rowSums(pseudobulk), FUN = "/")
 
-
+#prepare individual sample
 sample <- "hijfte/pr3"  # for example: bolleboom/H243
 file <- paste0("output/celltypes/", sample ,"/spec_prop.zscore_tau.csv")
 
@@ -35,13 +28,14 @@ rows_remove <- rownames(rows_with_zeros)
 celltypes_in_sample <- list(colnames(specificity_scores_sample))
 specificity_scores_sample <- specificity_scores_sample[!rownames(specificity_scores_sample) %in% rows_remove, ]
 
+#only use genes present in both combined as individual sample
 common <- intersect(rownames(pseudobulk), rownames(specificity_scores_sample))
 
 pseudo_filtered <- pseudobulk[common, , drop= FALSE]
 specificity_sample_filtered <- specificity_scores_sample[common, , drop = FALSE]
 
 
-
+#combined sample filtered on cell type
 bulk_astro <- pseudo_filtered[, "sum_Astro", drop=FALSE]
 bulk_oligo <- pseudo_filtered[, "sum_Oligo", drop=FALSE]
 bulk_tam <- pseudo_filtered[, "sum_TAM", drop=FALSE]
@@ -57,7 +51,7 @@ bulk_otumor <- pseudo_filtered[, "sum_OTumor", drop=FALSE]
 bulk_adiv <- pseudo_filtered[, "sum_ADiv_tumor", drop=FALSE]
 bulk_onot <- pseudo_filtered[, "sum_O_notsure", drop=FALSE]
 
-
+#individual sample filtered on cell type
 sample_astro <- specificity_sample_filtered[, "Astro", drop=FALSE]
 sample_oligo <- specificity_sample_filtered[, "Oligo", drop=FALSE]
 sample_tam <- specificity_sample_filtered[, "TAM", drop=FALSE]
@@ -73,6 +67,7 @@ sample_otumor <- specificity_sample_filtered[, "OTumor", drop=FALSE]
 sample_adiv <- specificity_sample_filtered[, "ADiv.tumor", drop=FALSE]
 sample_onot <- specificity_sample_filtered[, "O.", drop=FALSE]
 
+#spearman correlation of scores for cell type between combined and individual
 cor(sample_astro, bulk_astro, method = "spearman")
 cor(sample_oligo, bulk_oligo, method = "spearman")
 cor(sample_tam, bulk_tam, method = "spearman")
@@ -98,6 +93,7 @@ cor(sample_onot, bulk_onot, method = "spearman")
 # df_per <- cbind(bulk_per, sample_per)
 # df_opc <- cbind(bulk_opc, sample_opc)
 
+#plot scores
 ggplot(df_astro, aes(x = sum_Astro, y = Astro)) +
   geom_point() +
   labs(x= "bulk counts", y= "specificity score", title = "hijfte Astro") +

@@ -1,4 +1,6 @@
+#conditioned sampling
 
+#load all objects
 files5 <- list.files(path= "output/diaz/", pattern = "*.rds", full.names = TRUE)[-6]
 files1 <- list.files(path= "output/yuan/", pattern = "*.rds", full.names = TRUE)
 files2 <- list.files(path= "output/couturier/", pattern = "*.rds", full.names = TRUE)
@@ -8,7 +10,7 @@ files6 <- list.files(path= "output/diaz_astrooligo/", pattern = "*.rds", full.na
 
 rds_files <- c(files5, files1, files2, files3, files4, files6)
 
-
+# load all objects into one list
 objects <- list()
 files_all <- c(files5, files1, files2, files3, files4, files6)
 for (file in files_all) {
@@ -18,7 +20,7 @@ for (file in files_all) {
 
 generate_pseudobulk <- function(seurat_list, num_cells, num_samples, condition_celltype, condition_fraction, excluded_celltypes) {
   
-  # Combineer metadata van alle Seurat-objecten
+  # Combine metadata from all seurat objects
   all_cells <- do.call(rbind, lapply(seurat_list, function(obj) {
     data.frame(Cell = colnames(obj), CellType = obj$celltype, Sample = obj@project.name)
   }))
@@ -27,9 +29,9 @@ generate_pseudobulk <- function(seurat_list, num_cells, num_samples, condition_c
     all_cells <- all_cells %>% filter(!CellType %in% excluded_celltypes)
   }
   
-  set.seed(42)  # Reproduceerbaarheid
+  set.seed(42)  # Reproducability
   
-  # Hulpfunctie om een pseudo-bulk sample te genereren
+  # Helpfunction to generate a pseudo-bulk sample
   create_sample <- function(selected_cells, seurat_list) {
     selected_matrices <- lapply(seurat_list, function(obj) {
       subset_cells <- intersect(colnames(obj), selected_cells$Cell)
@@ -42,16 +44,15 @@ generate_pseudobulk <- function(seurat_list, num_cells, num_samples, condition_c
       }
     })
     
-    # Verwijder NULL waarden en combineer expressie
+    # Remove NULL values and combine expression
     selected_matrices <- Filter(Negate(is.null), selected_matrices)
     if (length(selected_matrices) == 0) {
-      stop("Geen overlappende cellen gevonden in de Seurat-objecten.")
+      stop("No overlapping cells in seurat objects.")
     }
     
-    return(Reduce("+", selected_matrices) / length(selected_matrices))  # Gemiddelde expressie per gen
+    return(Reduce("+", selected_matrices) / length(selected_matrices))  # Average expression per gene
   }
-  
-  # Maak 10 pseudo-bulk samples voor de controle groep (uniforme verdeling)
+  # get 10 pseudo-bulk samples for control group -- uniform distribution
   control_samples <- replicate(num_samples, {
     sampled_cells <- all_cells %>%
       group_by(CellType) %>%
@@ -59,7 +60,7 @@ generate_pseudobulk <- function(seurat_list, num_cells, num_samples, condition_c
     create_sample(sampled_cells, seurat_list)
   }, simplify = FALSE)
   
-  # Maak 10 pseudo-bulk samples voor de conditie groep (50% specifiek celtype)
+  #get 10 pseudo-bulk samples for the condition group (50% specific cell type)
   condition_samples <- replicate(num_samples, {
     target_count <- round(num_cells * condition_fraction)
     remaining_count <- num_cells - target_count
@@ -76,7 +77,7 @@ generate_pseudobulk <- function(seurat_list, num_cells, num_samples, condition_c
     create_sample(condition_cells, seurat_list)
   }, simplify = FALSE)
   
-  # Zet de samples om in een matrix voor DESeq2
+  # get samples into a matrix for deseq2 
   all_samples <- c(control_samples, condition_samples)
   pseudobulk_matrix <- do.call(cbind, all_samples)
   colnames(pseudobulk_matrix) <- c(paste0("control_", 1:num_samples), paste0("condition_", 1:num_samples))
@@ -84,7 +85,7 @@ generate_pseudobulk <- function(seurat_list, num_cells, num_samples, condition_c
   pseudobulk_matrix <- round(pseudobulk_matrix)
   pseudobulk_matrix[pseudobulk_matrix < 0] <- 0 
   
-  # Metadata voor DESeq2
+  # Metadata for DESeq2
   colData <- data.frame(
     sample = colnames(pseudobulk_matrix),
     condition = rep(c("control", "condition"), each = num_samples),
@@ -94,7 +95,7 @@ generate_pseudobulk <- function(seurat_list, num_cells, num_samples, condition_c
   return(list(counts = pseudobulk_matrix, colData = colData))
 }
 
-
+#set parameters for above function
 result <- generate_pseudobulk(objects, num_cells = 1000, num_samples = 10, condition_celltype = "Astro", condition_fraction = 0.5, excluded_celltypes = NULL)
 counts_matrix <- result$counts
 colData <- result$colData
@@ -104,9 +105,11 @@ dds <- DESeqDataSetFromMatrix(countData = counts_matrix, colData = colData, desi
 dds <- DESeq(dds)
 res <- results(dds)
 
+#sort deseq2 output on decreasing p-value and remove non-coding genes. 
 res_sorted <- res[order(res$pvalue), ]
 filtered_genes <- rownames(res_sorted)[!grepl("^(RP11|RP3|RP13|RP4|RP5|RP1-)", rownames(res_sorted))]
 res_sorted <- res_sorted[filtered_genes, ]
+#p-value < 0.01 was said to be significant
 res_significant <- res_sorted[res_sorted$pvalue < 0.01, ]
 pseudo_sig <- rownames(res_significant)
 
@@ -115,6 +118,7 @@ overlap <- intersect(pseudo_sig, sig_des)
 
 
 
+# tried to set out the zpex score to the t-score of deseq2. -- not mentionable result
 t_scores_df <- data.frame(Gene = rownames(res), t_score = res@listData$stat)
 
 df <- read.csv("output/celltypes/combined_all/spec_prop.zscore_tau.csv", row.names = 1)

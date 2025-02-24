@@ -1,12 +1,4 @@
-# generate pseudobulk data (subset of combined counts csv)
-# compare specificity scores with pseudobulk profiles 
-# nadenken of counts misschien moeten worden getransformeerd -- zijn genormalizeerd
-# correlatie is gebaseerd op intersect van genen in sample en all 
-# correlation test -- correlation between specificity scores and pseudobulk profiles
-
-# cor test: spearman-- monotonic    pearson -- lineair
-
-# DE on bulk -- compare DE genes to high scoring genes 
+#compare genes from McKenzie with genes highest scores per cell type
 
 # list_celltypes <- list("sum_GTumor", "sum_ATumor", "sum_OTumor", "sum_GDiv tumor", "sum_ADiv tumor", "sum_Oligo", "sum_TAM", 
 #                        "sum_Per", "sum_Endo", "sum_Astro", "sum_Neuron", "sum_OPC", "sum_Tcell", "sum_O_notsure")
@@ -29,26 +21,27 @@ specificity_scores_sample <- read.csv(file, row.names = 1)
 specificity_scores_sample <- as.data.frame(specificity_scores_sample)
 specificity_scores_sample <- subset(specificity_scores_sample, select= -c(tau_score_vst, maximum, max_cluster, logmax))
 
+#normalized counts combined sample
 bulk_astro <- bulk[, "sum_Astro", drop=FALSE] 
 bulk_astro <- bulk_astro[order(bulk_astro$sum_Astro, decreasing = TRUE), , drop = FALSE]
 bulk_oligo <- bulk[, "sum_Oligo", drop=FALSE]
 bulk_oligo <- bulk_oligo[order(bulk_oligo$sum_Oligo, decreasing = TRUE), , drop = FALSE]
 bulk_tam <- bulk[, "sum_TAM", drop=FALSE]
 bulk_tam <- bulk_tam[order(bulk_tam$sum_TAM, decreasing = TRUE), , drop = FALSE]
-# bulk_tumor <- bulk[, "sum_Tumor", drop=FALSE]
-# bulk_tumor <- bulk_tumor[order(bulk_tumor$sum_Tumor, decreasing = TRUE), , drop = FALSE]
-# bulk_div <- bulk[, "sum_Div_tumor", drop=FALSE]
-# bulk_div <- bulk_div[order(bulk_div$sum_Div_tumor, decreasing = TRUE), , drop = FALSE]
+bulk_tumor <- bulk[, "sum_Tumor", drop=FALSE]
+bulk_tumor <- bulk_tumor[order(bulk_tumor$sum_Tumor, decreasing = TRUE), , drop = FALSE]
+bulk_div <- bulk[, "sum_Div_tumor", drop=FALSE]
+bulk_div <- bulk_div[order(bulk_div$sum_Div_tumor, decreasing = TRUE), , drop = FALSE]
 bulk_neuron <- bulk[, "sum_Neuron", drop=FALSE]
 bulk_neuron <- bulk_neuron[order(bulk_neuron$sum_Neuron, decreasing = TRUE), , drop = FALSE]
-# bulk_opc <- bulk[, "sum_OPC", drop=FALSE]
-# bulk_opc <- bulk_opc[order(bulk_opc$sum_OPC, decreasing = TRUE), , drop = FALSE]
+bulk_opc <- bulk[, "sum_OPC", drop=FALSE]
+bulk_opc <- bulk_opc[order(bulk_opc$sum_OPC, decreasing = TRUE), , drop = FALSE]
 bulk_endo <- bulk[, "sum_Endo", drop=FALSE]
 bulk_endo <- bulk_endo[order(bulk_endo$sum_Endo, decreasing = TRUE), , drop = FALSE]
-# bulk_per <- bulk[, "sum_Per", drop=FALSE]
-# bulk_per <- bulk_per[order(bulk_per$sum_Per, decreasing = TRUE), , drop = FALSE]
-# bulk_tcell <- bulk[, "sum_Tcell", drop=FALSE]
-# bulk_tcell <- bulk_tcell[order(bulk_tcell$sum_Tcell, decreasing = TRUE), , drop = FALSE]
+bulk_per <- bulk[, "sum_Per", drop=FALSE]
+bulk_per <- bulk_per[order(bulk_per$sum_Per, decreasing = TRUE), , drop = FALSE]
+bulk_tcell <- bulk[, "sum_Tcell", drop=FALSE]
+bulk_tcell <- bulk_tcell[order(bulk_tcell$sum_Tcell, decreasing = TRUE), , drop = FALSE]
 
 # for specificity scores on combined
 combined_astro <- specificity_scores_sample[, "sum_Astro", drop=FALSE] 
@@ -73,7 +66,7 @@ combined_tcell <- specificity_scores_sample[, "sum_Tcell", drop=FALSE]
 combined_tcell <- combined_tcell[order(combined_tcell$sum_Tcell, decreasing = TRUE), , drop = FALSE]
 
 
-
+# for specificity scores on individual sample
 sample_astro <- specificity_scores_sample[, "Astro", drop=FALSE]
 sample_astro <- sample_astro[order(sample_astro$Astro, decreasing = TRUE), , drop = FALSE]
 sample_oligo <- specificity_scores_sample[, "Oligo", drop=FALSE]
@@ -90,10 +83,10 @@ sample_endo <- specificity_scores_sample[, "Endo", drop=FALSE]
 sample_endo <- sample_endo[order(sample_endo$Endo, decreasing = TRUE), , drop = FALSE]
 sample_per <- specificity_scores_sample[, "Per", drop=FALSE]
 sample_per <- sample_per[order(sample_per$Per, decreasing = TRUE), , drop = FALSE]
-# sample_opc <- specificity_scores_sample[, "OPC", drop=FALSE]
-# sample_opc <- sample_opc[order(sample_opc$OPC, decreasing = TRUE), , drop = FALSE]
-# sample_tcell <- specificity_scores_sample[, "Tcell", drop=FALSE]
-# sample_tcell <- sample_tcell[order(sample_tcell$Tcell, decreasing = TRUE), , drop = FALSE]
+sample_opc <- specificity_scores_sample[, "OPC", drop=FALSE]
+sample_opc <- sample_opc[order(sample_opc$OPC, decreasing = TRUE), , drop = FALSE]
+sample_tcell <- specificity_scores_sample[, "Tcell", drop=FALSE]
+sample_tcell <- sample_tcell[order(sample_tcell$Tcell, decreasing = TRUE), , drop = FALSE]
 
 
 
@@ -105,6 +98,7 @@ kenzie <- kenzie[-2, ]
 
 celltypes_kenzie <- split(kenzie, kenzie$Celltype)
 
+#extract and sort data on grand_mean
 kenzie_ast <- celltypes_kenzie$ast
 rownames(kenzie_ast) <- kenzie_ast$gene 
 kenzie_ast$gene <- NULL 
@@ -136,21 +130,21 @@ kenzie_end$gene <- NULL
 kenzie_end$grand_mean <- as.numeric(kenzie_end$grand_mean)
 kenzie_end <- kenzie_end[order(-kenzie_end$grand_mean), ]
 
-
+#overlap between list McKenzie and highest normalized counts combined
 print(length(intersect(head(rownames(kenzie_ast), 200), head(rownames(bulk_astro), 200))))
 print(length(intersect(head(rownames(kenzie_oli), 200), head(rownames(bulk_oligo), 200))))
 print(length(intersect(head(rownames(kenzie_neu), 200), head(rownames(bulk_neuron), 200))))
 print(length(intersect(head(rownames(kenzie_mic), 200), head(rownames(bulk_tam), 200))))
 print(length(intersect(head(rownames(kenzie_end), 200), head(rownames(bulk_endo), 200))))
 
-
+#overlap between list McKenzie and highest spec score individual sample
 print(length(intersect(head(rownames(kenzie_ast), 200), head(rownames(sample_astro), 200))))
 print(length(intersect(head(rownames(kenzie_oli), 200), head(rownames(sample_oligo), 200))))
 print(length(intersect(head(rownames(kenzie_neu), 200), head(rownames(sample_neuron), 200))))
 print(length(intersect(head(rownames(kenzie_mic), 200), head(rownames(sample_tam), 200))))
 print(length(intersect(head(rownames(kenzie_end), 200), head(rownames(sample_endo), 200))))
 
-#combined
+#overlap between list McKenzie and highest spec score combined
 print(length(intersect(head(rownames(kenzie_ast), 200), head(rownames(combined_astro), 200))))
 print(length(intersect(head(rownames(kenzie_oli), 200), head(rownames(combined_oligo), 200))))
 print(length(intersect(head(rownames(kenzie_neu), 200), head(rownames(combined_neuron), 200))))
