@@ -1,4 +1,6 @@
-# SC glioma atlas
+# SC Glioma Atlas
+
+Master thesis SC Glioma Atlas for Bioinformatics and Systems Biology at VU Amsterdam. The research was conducted at the Neurology department of Erasmus MC Rotterdam. 
 
 ## Abstract
 Gliomas are aggressive brain tumors characterized by a highly heterogeneous tumor microenvironment (TME). This complex tumor microenvironment plays critical roles in tumor progression and therapy resistance. Single-cell RNA sequencing is used to investigate the glioma microenvironment as this allows to analyze transcriptional profiles of individual cells.
@@ -21,6 +23,16 @@ The structure consists of multiple directories and some single R files.
 - Validation: Contains files used for different ways of validation
 - Wies_glass_validatie: contains files used for validation using external data (correlation plot)
 
+
+- combining.R was used to combine all count matrices together into one big matrix. 
+- infercnv.R was used to get a copy number profile of each sample. 
+- pooling.R was used to pool the combined sample, to run DESeq2 and to extract the specificity scores. 
+- pooling_celltypes.R was used to pool the individual samples, to run DESeq2 and to extract the specificity scores. 
+- specificity_scoring_functions.R contains the functions used to calculate the specificity scores (these functions are used in the pooling files).
+
+- top_20_genes_DE_DESeq2.txt contains the 20 genes most differentially expressed per celltype. 
+- top_20_genes_highest_specscore.txt contains the 20 genes with the highest specificity scores per cell type. 
+
 ## Packages
 - R -- 4.4.1 
 - infercnv -- 1.21.0
@@ -40,6 +52,15 @@ The structure consists of multiple directories and some single R files.
 
 
 ## Data used
+The data that was used to conduct this research was coming from 5 different studies and was available in a 10X format: counts per gene per cell. 
 
 ## How to use
-From raw data till scores. 
+1. "individual-process/" to preprocess the samples stored as 10X format to extract parameters.
+1. "individual-process/" to actually preprocess the samples using the found parameters. Objects were stored in a convenient location. 
+1. "annotation/marker_plot.R" to analyze the expression of marker genes in the found clusters. 
+1. "annotation/annotations.R" to store the annotations of the clusters in the metadata of the objects. 
+1. "infercnv.R" to extract copy number profiles to refine the initial annotations. -- annotations were updated again with "annotation/annotations.R"
+1. "pooling/celltypes" to pool the individual samples on cell type. DESeq2 was run on the pooled object to extract the DE genes per cluster. On the pooled counts, the specificity metrics (from "specificity_scoring_functions.R") were applied to get the specificity scores per gene per cell type. 
+1. After all samples had been processed individually, "combining.R" was run to pool all samples together into one big matrix. 
+1. "pooling.R" was run to extract the DE genes per cell type in the combined sample, and again the specificity scoring metrics were applied. 
+1. "validation/" and "wies_glass_validation" were used to perform validation analysis on the extracted specificity scores. 
