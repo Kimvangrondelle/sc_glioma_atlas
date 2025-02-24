@@ -1,3 +1,5 @@
+#file to process extra sample for member of the department -- not included in the research
+
 library(Matrix)
 
 data <- read.table("../../mnt/neuro-genomic-1-ro/single_cell_data/GSE89567_Venteicher/GSE89567_IDH_A_processed_data.txt", header = TRUE)

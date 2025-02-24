@@ -1,3 +1,4 @@
+#testing first version of tau on average expression data 
 
 gene_exp_matr_sample_clus <- function(object) { #get matrix with average gene expres per cluster
   seurat_obj <- readRDS(file = paste0("output/", object))
@@ -23,7 +24,7 @@ gene_exp_matr_sample_clus <- function(object) { #get matrix with average gene ex
 
 mat16 <- gene_exp_matr_sample_clus("yuan16.rds")
 
-
+#first version of tau -- not used 
 tau <- function(average_exp) {  # 1 is cluster ex == max ex
   n_genes <- nrow(average_exp)
   n_clus <- ncol(average_exp)

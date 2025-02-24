@@ -1,3 +1,5 @@
+#tried a couple of ways to visualize the FindMArker outputs
+
 data <- pseudo_diaz1002_with_tau
 
 #sums <- rowSums(diaz_10022_counts)

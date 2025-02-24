@@ -1,26 +1,31 @@
+# it was tried to integrate the samples per dataset. However they were not used in the research. 
 couturier <- list.files(path= "output/couturier", pattern = "*.rds", full.names = TRUE)
 
 objs <- list()
+#loop through samples
 for (file in couturier) {
   obj <- readRDS(file = file)
   obj$sample_id <- file
   objs[[length(objs) + 1]] <- obj
 }
+#merging of the samples
 if (length(objs) > 1) {
   combined <- merge(objs[[1]], y= objs[2:length(objs)], add.cell.ids=names(objs))
-  }  
+}  
+ 
+#preprocess
 combined <- NormalizeData(combined)
 combined <- FindVariableFeatures(combined)
 combined <- ScaleData(combined)
 
 combined <- RunPCA(combined, npcs=30)
-
+#integration of the samples on sample_id
 combined <- RunHarmony(combined, group.by="sample_id", assay.use="RNA")
 coutu <- combined
-
+#same process as individual samples
 coutu[["percent.mt"]] <- PercentageFeatureSet(coutu, pattern = "^MT")
 VlnPlot(coutu, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
-
+#subsetting, normalizing, scaling and pca
 coutu <- subset(x=coutu, subset = nFeature_RNA > 200 & nFeature_RNA < 6500 & nCount_RNA > 200 & nCount_RNA < 45000 & percent.mt < 2)
 coutu <- NormalizeData(coutu)
 coutu <- FindVariableFeatures(coutu, selection.method = "vst", nfeatures = 2000)
@@ -31,7 +36,7 @@ DimPlot(coutu, reduction = "pca")
 ElbowPlot(coutu, ndims = 45)
 
 #12
-d <- 15
+d <- 15 #optimal number of pcs
 coutu <- FindNeighbors(coutu, dims = 1:d)
 coutu <- FindClusters(coutu, resolution = 0.8)
 coutu <- RunUMAP(coutu, dims = 1:d)
@@ -43,6 +48,8 @@ DimPlot(integrated_coutu, reduction = "umap", group.by = "sample_id")
 
   
 diaz <- list.files(path= "output/diaz", pattern = "*.rds", full.names = TRUE)
+
+
 yuanie <- list.files(path= "output/yuan", pattern = "*.rds", full.names = TRUE)
 
 objs <- list()

@@ -1,4 +1,4 @@
-
+#test aggregat expression and tau on this aggregated counts. 
 object <- readRDS(file = "output/hijfte/hijfte-y.rds")
 object <- readRDS(file = "output/hijfte/3pr.rds")
 

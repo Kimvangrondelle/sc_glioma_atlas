@@ -1,3 +1,5 @@
+#tried several things within this file
+
 diaz10022 <- Read10X(data.dir = "../../mnt/neuro-genomic-1-ro/single_cell_data/GSE138794_Diaz/snRNA_GSM4119521_SF10022_GBM")
 diaz10022 <- CreateSeuratObject(counts = diaz10022, project = "sc_glioma_atlas", min.cells=3, min.features=200)
 diaz10022[["percent.mt"]] <- PercentageFeatureSet(diaz10022, pattern = "^MT")
@@ -42,7 +44,7 @@ cluster_counts <- table(diaz10022$seurat_clusters)
 cluster_counts_df <- as.data.frame(cluster_counts)
 
 
-
+#tried to run DESeq2 on preprocess output and applies the metrics to test. 
 object <- readRDS(file = "output/hijfte/hijfte-y.rds")
 agg_object <- AggregateExpression(object, group.by = "seurat_clusters", return.seurat = TRUE, normalization.method = "LogNormalize")
 
@@ -65,16 +67,7 @@ spec_tau$maximum <- apply(spec_tau[ , !(colnames(spec_tau) %in% "tau_score_vst")
 spec_tau$logmax <- log(spec_tau$maximum)
 
 
-
-# plotlog <- ggplot(sorted_spec, aes(x=tau_score_vst, y=logmax)) +
-#   geom_point() + # Show dots
-#   geom_text(
-#     label=rownames(sorted_spec), 
-#     nudge_x = 0, nudge_y = 0, 
-#     check_overlap = T
-#   )
-library(plotly)
-
+#tried different plots to visualize the scores
 fig <- plot_ly(type = 'scatter', mode = 'markers') 
 fig <- fig %>%
   add_trace(
@@ -92,15 +85,9 @@ top10_genes <- unlist(strsplit(top10$genes, ", "))
 plotlog <- ggplot(spec_tau, aes(x=tau_score_vst, y=logmax)) +
   # Color points based on whether the gene is in top10 or not
   geom_point(aes(color = ifelse(rownames(spec_tau) %in% top10_genes, "top10", "other"))) +
+
   
-  # Add labels with nudging
-  # geom_text(
-  #   label = rownames(spec_tau),
-  #   nudge_x = 0, nudge_y = 0,
-  #   check_overlap = TRUE
-  # ) +
-  
-  # Define custom colors for top10 and other genes
+  # Define colors for top10 and other genes
   scale_color_manual(values = c("top10" = "red", "other" = "grey")) +
   
   # Add labels and theme
@@ -111,6 +98,7 @@ plotlog <- ggplot(spec_tau, aes(x=tau_score_vst, y=logmax)) +
 print(plotlog)
 
 
+#tried the aggregation of cell types per sample
 diaz10022 <- readRDS(file = "output/diaz/diaz10022.rds")
 dim(diaz10022)
 
@@ -213,7 +201,7 @@ diaz_10022_counts
 print(rowSums(diaz_10022_counts) > 40000)
 
 
-
+#tested the effect of transformation using vst
 set.seed(123)  # For reproducibility
 
 # Simulate counts for 100 genes across 6 samples (clusters)

@@ -1,9 +1,9 @@
 # need CellRanger installed on system
 # will result in the matrix, features and barcodes files 
-# nog ff verder uitzoeken hoe dit werkt
-# schijnt lang te duren bij een file 
 # reference is GRCh38 
 
+# tried to get it working however not enough time. 
+#below the command promts that were used -- however, they did not work
 cellranger count --id=run_test_y_levi \
 --fastqs=/mnt/home/user.name/yard/run_cellranger_count/pbmc_1k_v3_fastqs \
 --sample=pbmc_1k_v3 \

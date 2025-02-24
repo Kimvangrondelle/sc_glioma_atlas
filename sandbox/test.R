@@ -1,4 +1,4 @@
-library(Seurat)
+#testing the merging of two samples
 
 object_1 <- Read10X("../../mnt/neuro-genomic-1-ro/single_cell_data/EGAS00001004422_Couturier/BT364_1of2.filtered_gene_matrices")
 object_1 <- CreateSeuratObject(counts = object_1, project = paste0("int"), min.cells=3, min.features=200)
@@ -21,7 +21,7 @@ seurat_obj <- subset(x = seurat_obj,
                        nCount_RNA < 35000 & 
                        percent.mt < 2)
 
-
+#checking whether cells were present in both samples
 print("1/2_AAACGGGTCGTCGTTC-1" %in% rownames(seurat_obj@assays$RNA@cells@.Data))
 print("2/2_AAACGGGTCGTCGTTC-1" %in% rownames(seurat_obj@assays$RNA@cells@.Data))
 print("1/2_AGGCCGTTCTAAGCCA-1" %in% rownames(seurat_obj@assays$RNA@cells@.Data))

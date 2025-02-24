@@ -1,3 +1,6 @@
+#tested multiple metrics to quantify gene specificty. Used pseudo data to test how the metrics differentiate between specific and widespread expression
+
+#pseudo data used. 
 gene_expression <- data.frame(
   Gene = paste0("Gene", 1:10), 
   CellType_A = c(100, 5, 30, 500, 90, 10, 70, 15, 55, 800),

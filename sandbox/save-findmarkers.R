@@ -1,3 +1,6 @@
+#used in start of the process to save the objects and to extract the top 20 DE genes per cluster. 
+
+#function to save
 save_objects <- function(samples, seurat_objects) {
   for (a in 1:length(samples)){
     saveRDS(objects[[a]], file = paste0("output/bolleboom/", samples[a], ".rds"))
@@ -9,7 +12,7 @@ samples <- list("H243")
 save <- save_objects(samples, objects)
 
 
-
+#function to extract per sample per cluster the top 10 DE genes
 markers <- function(list_of_files) {
   markers_per_clus_per_sam <- list()
   for (i in 1:length(list_of_files)) {
