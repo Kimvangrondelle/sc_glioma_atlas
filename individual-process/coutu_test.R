@@ -1,72 +1,32 @@
-# BT338 combined ----
-object_1 <- Read10X(data.dir = "../../mnt/neuro-genomic-1-ro/single_cell_data/EGAS00001004422_Couturier/BT338_1of2.filtered_gene_matrices")
-object_1 <- CreateSeuratObject(counts = object_1, project = "cou338_1", min.cells=3, min.features=200)
-
-object_2 <- Read10X(data.dir = "../../mnt/neuro-genomic-1-ro/single_cell_data/EGAS00001004422_Couturier/BT338_2of2.filtered_gene_matrices")
-object_2 <- CreateSeuratObject(counts = object_2, project = "cou338_2", min.cells=3, min.features=200)
-
-objects.combined <- merge(object_1, y = object_2, add.cell.ids = c("1/2", "2/2"), project = "coutu338")
-objects.combined
-
-cou338 <- objects.combined
-cou338 <- JoinLayers(cou338)
-cou338[["percent.mt"]] <- PercentageFeatureSet(cou338, pattern = "^MT")
-
-VlnPlot(cou338, features= c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol=3)
-
-cou338 <- subset(x= cou338, subset = nFeature_RNA > 1000 & nFeature_RNA < 7800 & nCount_RNA > 200 & nCount_RNA < 50000 & percent.mt < 2)
-
-cou338 <- NormalizeData(cou338)
-cou338 <- FindVariableFeatures(cou338, selection.method = "vst", nfeatures = 2000)
-top20_338 <- head(VariableFeatures(cou338), 20)
-
-cou338 <- ScaleData(cou338, features = rownames(cou338))
-cou338 <- RunPCA(cou338, features = VariableFeatures(object=cou338))
-DimPlot(cou338, reduction = "pca") + NoLegend()
-ElbowPlot(cou338, ndims=45)
-
-d_338 <- 12 
-cou338 <- FindNeighbors(cou338, dims = 1:d_338)
-cou338 <- FindClusters(cou338, resolution = 0.8)
-cou338 <- RunUMAP(cou338, dims=1:d_338)
-DimPlot(cou338, reduction = "umap")
-
-all_markers_338 <- FindAllMarkers(cou338, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
-
-# For each cluster, select the top 5 markers based on avg_log2FC
-top5_markers_338 <- all_markers_338 %>%
-  group_by(cluster) %>%
-  top_n(n = 10, wt = avg_log2FC) %>%
-  summarise(genes = paste(gene, collapse = ", "))
-
-print(top5_markers_338)
-
+# only the first sample has been commented -- rest follows same structure
 
 # BT338 1/2 ----
+# load data
 sid_338 <- 'coutu_sample_338'
 object_1 <- Read10X(data.dir = "../../mnt/neuro-genomic-1-ro/single_cell_data/EGAS00001004422_Couturier/BT338_1of2.filtered_gene_matrices")
+# create seurat object and prefilter based on min.cells and min.features.
 object_1 <- CreateSeuratObject(counts = object_1, project = "cou338", min.cells=3, min.features=200)
-
+# calculate percent mitochondrial genes
 cou338 <- object_1
 cou338[["percent.mt"]] <- PercentageFeatureSet(cou338, pattern = "^MT")
-
+# make violin plots to determine parameters for further analysis
 VlnPlot(cou338, features= c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol=3)
-
+# subset on found parameters
 cou338 <- subset(x= cou338, subset = nFeature_RNA > 1000 & nFeature_RNA < 7800 & nCount_RNA > 200 & nCount_RNA < 50000 & percent.mt < 2)
-
+# process data: Normalizing, Finding variable features, Scaling and PCA
 cou338 <- NormalizeData(cou338)
 cou338 <- FindVariableFeatures(cou338, selection.method = "vst", nfeatures = 2000)
-top20_25 <- head(VariableFeatures(cou338), 20)
-
 cou338 <- ScaleData(cou338, features = rownames(cou338))
 cou338 <- RunPCA(cou338, features = VariableFeatures(object=cou338))
+# Elbow plot to determine optimal number of principal components
 DimPlot(cou338, reduction = "pca") + NoLegend()
 ElbowPlot(cou338, ndims=45)
 
-d_338 <- 12 
+d_338 <- 12 # -- optimal principal components
+# clustering 
 cou338 <- FindNeighbors(cou338, dims = 1:d_338)
 cou338 <- FindClusters(cou338, resolution = 0.8)
-
+# umap to see how cells cluster together
 cou338 <- RunUMAP(cou338, dims=1:d_338)
 DimPlot(cou338, reduction = "umap")
 
@@ -86,8 +46,6 @@ cou3382 <- subset(x= cou3382, subset = nFeature_RNA > 1000 & nFeature_RNA < 7800
 
 cou3382 <- NormalizeData(cou3382)
 cou3382 <- FindVariableFeatures(cou3382, selection.method = "vst", nfeatures = 2000)
-top20_25 <- head(VariableFeatures(cou3382), 20)
-
 cou3382 <- ScaleData(cou3382, features = rownames(cou3382))
 cou3382 <- RunPCA(cou3382, features = VariableFeatures(object=cou3382))
 DimPlot(cou3382, reduction = "pca") + NoLegend()
@@ -100,7 +58,47 @@ cou3382 <- FindClusters(cou3382, resolution = 0.8)
 cou3382 <- RunUMAP(cou3382, dims=1:d_3382)
 DimPlot(cou3382, reduction = "umap")
 
+# BT338 combined ----
+# samples from Couturier consisted of 2 parts, and were combined into one object below. -- rest of analysis follows same structure.
+object_1 <- Read10X(data.dir = "../../mnt/neuro-genomic-1-ro/single_cell_data/EGAS00001004422_Couturier/BT338_1of2.filtered_gene_matrices")
+object_1 <- CreateSeuratObject(counts = object_1, project = "cou338_1", min.cells=3, min.features=200)
 
+object_2 <- Read10X(data.dir = "../../mnt/neuro-genomic-1-ro/single_cell_data/EGAS00001004422_Couturier/BT338_2of2.filtered_gene_matrices")
+object_2 <- CreateSeuratObject(counts = object_2, project = "cou338_2", min.cells=3, min.features=200)
+
+objects.combined <- merge(object_1, y = object_2, add.cell.ids = c("1/2", "2/2"), project = "coutu338")
+objects.combined
+
+cou338 <- objects.combined
+cou338 <- JoinLayers(cou338)
+cou338[["percent.mt"]] <- PercentageFeatureSet(cou338, pattern = "^MT")
+
+VlnPlot(cou338, features= c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol=3)
+
+cou338 <- subset(x= cou338, subset = nFeature_RNA > 1000 & nFeature_RNA < 7800 & nCount_RNA > 200 & nCount_RNA < 50000 & percent.mt < 2)
+
+cou338 <- NormalizeData(cou338)
+cou338 <- FindVariableFeatures(cou338, selection.method = "vst", nfeatures = 2000)
+cou338 <- ScaleData(cou338, features = rownames(cou338))
+cou338 <- RunPCA(cou338, features = VariableFeatures(object=cou338))
+DimPlot(cou338, reduction = "pca") + NoLegend()
+ElbowPlot(cou338, ndims=45)
+
+d_338 <- 12 # -- optimal principal components
+cou338 <- FindNeighbors(cou338, dims = 1:d_338)
+cou338 <- FindClusters(cou338, resolution = 0.8)
+cou338 <- RunUMAP(cou338, dims=1:d_338)
+DimPlot(cou338, reduction = "umap")
+
+all_markers_338 <- FindAllMarkers(cou338, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+
+# For each cluster, select the top 5 markers based on avg_log2FC
+top5_markers_338 <- all_markers_338 %>%
+  group_by(cluster) %>%
+  top_n(n = 10, wt = avg_log2FC) %>%
+  summarise(genes = paste(gene, collapse = ", "))
+
+print(top5_markers_338)
 
 # BT363 1/2 ----
 sid_363 <- 'coutu_sample_363'
@@ -116,8 +114,6 @@ cou363 <- subset(x= cou363, subset = nFeature_RNA > 1000 & nFeature_RNA < 5500 &
 
 cou363 <- NormalizeData(cou363)
 cou363 <- FindVariableFeatures(cou363, selection.method = "vst", nfeatures = 2000)
-top20_25 <- head(VariableFeatures(cou363), 20)
-
 cou363 <- ScaleData(cou363, features = rownames(cou363))
 cou363 <- RunPCA(cou363, features = VariableFeatures(object=cou363))
 DimPlot(cou363, reduction = "pca") + NoLegend()
@@ -146,8 +142,6 @@ cou3632 <- subset(x= cou3632, subset = nFeature_RNA > 1000 & nFeature_RNA < 5500
 
 cou3632 <- NormalizeData(cou3632)
 cou3632 <- FindVariableFeatures(cou3632, selection.method = "vst", nfeatures = 2000)
-top20_25 <- head(VariableFeatures(cou3632), 20)
-
 cou3632 <- ScaleData(cou3632, features = rownames(cou3632))
 cou3632 <- RunPCA(cou3632, features = VariableFeatures(object=cou3632))
 DimPlot(cou3632, reduction = "pca") + NoLegend()
@@ -180,8 +174,6 @@ cou363 <- subset(x= cou363, subset = nFeature_RNA > 1000 & nFeature_RNA < 5500 &
 
 cou363 <- NormalizeData(cou363)
 cou363 <- FindVariableFeatures(cou363, selection.method = "vst", nfeatures = 2000)
-top20_363 <- head(VariableFeatures(cou363), 20)
-
 cou363 <- ScaleData(cou363, features = rownames(cou363))
 cou363 <- RunPCA(cou363, features = VariableFeatures(object=cou363))
 DimPlot(cou363, reduction = "pca") + NoLegend()

@@ -1,24 +1,32 @@
+# only the first sample has been commented -- rest follows same structure
 # 10022 ----
+# load data
 diaz10022 <- Read10X(data.dir = "../../../mnt/neuro-genomic-1-ro/single_cell_data/GSE138794_Diaz/snRNA_GSM4119521_SF10022_GBM")
+# create seurat object and prefilter based on min.cells and min.features.
 diaz10022 <- CreateSeuratObject(counts = diaz10022, project = "sc_glioma_atlas", min.cells=3, min.features=200)
+# calculate percent mitochondrial genes
 diaz10022[["percent.mt"]] <- PercentageFeatureSet(diaz10022, pattern = "^MT")
+# make violin plots to determine parameters for further analysis
 VlnPlot(diaz10022, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
-
+# subset on found parameters
 diaz10022 <- subset(x=diaz10022, subset = nFeature_RNA > 2000 & nFeature_RNA < 6000 & nCount_RNA > 4000 & nCount_RNA < 25000 & percent.mt < 1.5)
+# process data: Normalizing, Finding variable features, Scaling and PCA
 diaz10022 <- NormalizeData(diaz10022)
 diaz10022 <- FindVariableFeatures(diaz10022, selection.method = "vst", nfeatures = 2000)
 diaz10022 <- ScaleData(diaz10022, features = rownames(diaz10022))
 diaz10022 <- RunPCA(diaz10022, features = VariableFeatures(object = diaz10022))
-
+# Elbow plot to determine optimal number of principal components
 DimPlot(diaz10022, reduction = "pca") 
 ElbowPlot(diaz10022, ndims = 45)
 
-d_10022 <- 15
+d_10022 <- 15 # -- optimal principal components
+# clustering 
 diaz10022 <- FindNeighbors(diaz10022, dims = 1:d_10022)
 diaz10022 <- FindClusters(diaz10022, resolution = 0.8)
+# umap to see how cells cluster together
 diaz10022 <- RunUMAP(diaz10022, dims = 1:d_10022)
 DimPlot(diaz10022, reduction = "umap")
-
+# find DE genes per cluster using find all markers
 markers_10022 <- FindAllMarkers(diaz10022, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 top10 <- markers_10022 %>%
   group_by(cluster) %>%

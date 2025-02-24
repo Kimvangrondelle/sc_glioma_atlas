@@ -1,35 +1,42 @@
+
+#loading in and visualizing sample Hijfte-3pr as this was not preprocessed within this research. 
 astros <- readRDS("../../mnt/neuro-genomic-1-ro/Glimmunology/LGG_project/data_analysis/GLASS/3PR.RDS")
-
 DimPlot(astros, reduction = "umap")
-
 saveRDS(astros, "output/hijfte/3pr.rds")
 
 
-
+# only the first sample has been commented -- rest follows same structure
 
 #11136 ----
+# load data
 diaz11136 <- Read10X(data.dir = "../../mnt/neuro-genomic-1-ro/single_cell_data/GSE138794_Diaz/scRNA_GSM4119535_SF11136_LGG", gene.column = 1)
+# create seurat object and prefilter based on min.cells and min.features.
 diaz11136 <- CreateSeuratObject(counts = diaz11136, project = "sc_glioma_atlas", min.cells=3, min.features=200)
+# calculate percent mitochondrial genes
 diaz11136[["percent.mt"]] <- PercentageFeatureSet(diaz11136, pattern = "^MT")
+# make violin plots to determine parameters for further analysis
 VlnPlot(diaz11136, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
-
+# subset on found parameters
 diaz11136 <- subset(x=diaz11136, subset = nFeature_RNA > 200 & nFeature_RNA < 6500 & nCount_RNA > 200 & nCount_RNA < 30000 & percent.mt < 10)
+# process data: Normalizing, Finding variable features, Scaling and PCA
 diaz11136 <- NormalizeData(diaz11136)
 diaz11136 <- FindVariableFeatures(diaz11136, selection.method = "vst", nfeatures = 2000)
 diaz11136 <- ScaleData(diaz11136, features = rownames(diaz11136))
 diaz11136 <- RunPCA(diaz11136, features = VariableFeatures(object = diaz11136))
-
+# Elbow plot to determine optimal number of principal components
 DimPlot(diaz11136, reduction = "pca") 
 ElbowPlot(diaz11136, ndims = 45)
 
-d_11136 <- 15
+d_11136 <- 15 # -- optimal principal components
+# clustering
 diaz11136 <- FindNeighbors(diaz11136, dims = 1:d_11136)
 diaz11136 <- FindClusters(diaz11136, resolution = 0.8)
+# umap to see how cells cluster together
 diaz11136 <- RunUMAP(diaz11136, dims = 1:d_11136)
 DimPlot(diaz11136, reduction = "umap")
-
+# save object
 saveRDS(diaz11136, "output/diaz_astrooligo/diaz11136_astro.rds")
-
+# find DE genes per cluster using find all markers
 markers_11136 <- FindAllMarkers(diaz11136, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 top10 <- markers_11136 %>%
   group_by(cluster) %>%
