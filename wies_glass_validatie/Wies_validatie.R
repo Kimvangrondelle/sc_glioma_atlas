@@ -1,4 +1,3 @@
-#barplots van elk celltype met zelfde volgorde als in plot naast de plot
 
 # corrplot: 
 # https://github.com/yhoogstrate/recursiveCorPlot/blob/master/R/function_recursiveCorPlot.R
@@ -13,14 +12,14 @@ hclust <- readRDS("wies_glass_validatie/glass_nl__hclust.Rds")
 h <- readRDS("wies_glass_validatie/h.Rds")
 
 
-
+#define number of genes to use in corrplot
 bulk <- hclust |>
   head(n=200) |>
   t() |>
   cor()
 
 
-
+#make corrplot
 a = corrplot::corrplot(bulk, order="hclust",  tl.cex=0.25, tl.pos="l")
 corrplot <- corrplot::corrplot(bulk, order="hclust",  tl.cex=0.25, tl.pos="l")
 a$corrPos$y
@@ -32,16 +31,17 @@ par(mar = c(0, 0, 0, 0))
 corrplot::corrplot(bulk, order = "hclust", tl.cex = 0.25, tl.pos = "l")
 dev.off()
 
-
+#select genes used in corplot
 genes_corplot <- sapply(strsplit(rownames(a$corr), "_"), '[', 2)
 
+#load in specificity score data
 # specificity <- read.csv("output/celltypes/combined_all/spec_prop.zscore_tau.csv")
 # specificity <- read.csv("output/celltypes/hijfte/y/spec_prop.zscore_tau.csv")
 specificity <- read.csv("output/celltypes/combined_all/spec_prop.zscore_tau.csv")
 specificity <- as.data.frame(specificity)
 specificity <- subset(specificity, select= -c(tau_score_vst, maximum, max_cluster, logmax))
 
-
+#extract genes in the corrplot from the dataset.
 genes_with_scores <- data.frame(Gene = genes_corplot) %>% 
   left_join(specificity, by = c("Gene" = "X"))
 
@@ -54,7 +54,7 @@ barplot_list <- list()
 celltypes <- list("sum_GDiv_tumor", "sum_Endo", "sum_Per", "sum_TAM", "sum_GTumor", "sum_Oligo", "sum_OPC")
 celltypes <- list("sum_Astro", "sum_Tcell", "sum_ATumor", "sum_OTumor", "sum_ADiv_tumor", "sum_O_notsure", "sum_Neuron")
 
-
+#make a barplot with scores horizontally per cell type -- genes are in same order as genes in corplot
 for (celltype in celltypes) {
   p <- ggplot(genes_with_scores, aes_string(x="Gene", y=celltype)) +
     geom_col(fill = "skyblue") +
@@ -70,7 +70,7 @@ for (celltype in celltypes) {
 }
 
 
-
+#paste the barplots next to the corrplot
 corrplot_image <- ggdraw() + draw_image("corrplot.png", scale=1.03)
 barplots_combined <- wrap_plots(barplot_list, ncol = length(barplot_list))
 
@@ -88,18 +88,19 @@ print(final_plot)
 
 
 
-
+#genes in corrplot
 genes_corplot <- sapply(strsplit(rownames(a$corr), "_"), '[', 2)
 
 deseq <- read.csv("DESeq2_output_all_genes")
 deseq <- as.data.frame(deseq)
 deseq <- subset(deseq, select= -c(avg_log2FC, pct.1, pct.2, p_val_adj, gene))
 
-
+#make dataframe wider with 1 row per gene (instead of)
 deseq <- pivot_wider(deseq, names_from = cluster, values_from = p_val)
 deseq <- deseq %>%
   mutate(across(where(is.numeric), ~ -log10(.)))
 
+#extract genes in corrplot from the dataset
 genes_with_des <- data.frame(Gene = genes_corplot) %>% 
   left_join(deseq, by = c("Gene" = "X"))
 
@@ -112,7 +113,7 @@ barplot_list <- list()
 celltypes <- list("sum_GDiv_tumor", "sum_Endo", "sum_Per", "sum_TAM", "sum_GTumor", "sum_Oligo", "sum_OPC")
 celltypes <- list("sum_Astro", "sum_Tcell", "sum_ATumor", "sum_OTumor", "sum_ADiv_tumor", "sum_O_notsure", "sum_Neuron")
 
-
+# per cell type make a barplot with scores horizontally-- genes are in same order as genes in corplot
 for (celltype in celltypes) {
   p <- ggplot(genes_with_des, aes_string(x="Gene", y=celltype)) +
     geom_col(fill = "lightpink") +
@@ -129,7 +130,7 @@ for (celltype in celltypes) {
 }
 
 
-
+#paste the barplots next to the corplot
 corrplot_image <- ggdraw() + draw_image("corrplot.png", scale=1.03)
 barplots_combined <- wrap_plots(barplot_list, ncol = length(barplot_list))
 
@@ -145,13 +146,14 @@ print(final_plot)
 
 
 
-
+#genes in corplot
 genes_corplot <- sapply(strsplit(rownames(a$corr), "_"), '[', 2)
 
 deseq <- read.csv("output/celltypes/combined_all/spec_bayes.csv", row.names = 1)
 deseq <- as.data.frame(-log10(as.matrix(deseq)))
 deseq <- deseq %>% tibble::rownames_to_column("X")
 
+#extract the genes in the corplot from the dataframe
 genes_with_des <- data.frame(Gene = genes_corplot) %>% 
   left_join(deseq, by = c("Gene" = "X"))
 
@@ -164,7 +166,7 @@ barplot_list <- list()
 celltypes <- list("sum_GDiv_tumor", "sum_Endo", "sum_Per", "sum_TAM", "sum_GTumor", "sum_Oligo", "sum_OPC")
 celltypes <- list("sum_Astro", "sum_Tcell", "sum_ATumor", "sum_OTumor", "sum_ADiv_tumor", "sum_O_notsure", "sum_Neuron")
 
-
+#for every cell type make a barplot with scores horizontally -- genes are in same order as genes in corplot
 for (celltype in celltypes) {
   p <- ggplot(genes_with_des, aes_string(x="Gene", y=celltype)) +
     geom_col(fill = "lightgreen") +
@@ -181,7 +183,7 @@ for (celltype in celltypes) {
 }
 
 
-
+#paste the barplots next to the corrplot 
 corrplot_image <- ggdraw() + draw_image("corrplot.png", scale=1.0)
 barplots_combined <- wrap_plots(barplot_list, ncol = length(barplot_list))
 
@@ -199,7 +201,7 @@ print(final_plot)
 
 
 
-
+#also added a tau version -- same principle as above
 
 genes_corplot <- sapply(strsplit(rownames(a$corr), "_"), '[', 2)
 
@@ -249,11 +251,14 @@ final_plot <- plot_grid(
 print(final_plot)
 
 
+
+
+#load in data
 specificity <- read.csv("output/celltypes/combined_all/spec_prop.zscore_tau.csv")
 specificity <- as.data.frame(specificity)
 specificity <- subset(specificity, select= -c(tau_score_vst, maximum, max_cluster, logmax))
 
-
+#extract genes from corrplot
 genes_with_scores <- data.frame(Gene = genes_corplot) %>%
   left_join(specificity, by = c("Gene" = "X"))
 
@@ -279,7 +284,7 @@ rownames(genes_with_scores) <- genes_corplot
 # rownames(genes_with_scores) <- genes_corplot
 
 
-
+#extract p-values of scores per gene in the blocks of the corrplot
 left_block_indices <- 1:75          
 middle_block_indices <- 76:143 
 right_block_indices <- 144:200
