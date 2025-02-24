@@ -25,6 +25,7 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
     seurat_obj <- ScaleData(seurat_obj, features=all.genes)
     seurat_obj <- RunPCA(seurat_obj, features = VariableFeatures(object=seurat_obj))
     
+    # clustering + umap to visualize clusters
     seurat_obj <- FindNeighbors(seurat_obj, dims = 1:dims_set[[j]])
     seurat_obj <- FindClusters(seurat_obj, resolution = resolution)
     seurat_obj <- RunUMAP(seurat_obj, dims=1:dims_set[[j]])
@@ -44,9 +45,9 @@ data_dirs <- list(
 subset_params <- list(
   list(nFeature_lower = 200, nFeature_upper = 6000, nCount_lower = 200, nCount_upper = 18000, percent_mt = 1)
 )
-
+# number of optimal principal components
 dims_set <- list(16)
 
-# # Call the function with 8 datasets
+# # Call the function 
 objects <- process_datasets(data_dirs, subset_params, dims_set)
 

@@ -29,7 +29,7 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
     all.genes <- rownames(seurat_obj)
     seurat_obj <- ScaleData(seurat_obj, features=all.genes)
     seurat_obj <- RunPCA(seurat_obj, features = VariableFeatures(object=seurat_obj))
-    
+    #clustering
     seurat_obj <- FindNeighbors(seurat_obj, dims = 1:dims_set[[j]])
     seurat_obj <- FindClusters(seurat_obj, resolution = resolution)
     seurat_obj <- RunUMAP(seurat_obj, dims=1:dims_set[[j]])
@@ -40,7 +40,7 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
   }
   return(seurat_objects)
 }  
-# Example usage
+
 data_dirs <- list(
   "../../../mnt/neuro-genomic-1-ro/single_cell_data/GSE138794_Diaz/snRNA_GSM4119521_SF10022_GBM",
   "../../../mnt/neuro-genomic-1-ro/single_cell_data/GSE138794_Diaz/snRNA_GSM4119525_SF12264_GBM",
@@ -57,9 +57,9 @@ subset_params <- list(
   list(nFeature_lower = 1200, nFeature_upper = 8000, nCount_lower = 200, nCount_upper = 45000, percent_mt = 5),
   list(nFeature_lower = 500, nFeature_upper = 7000, nCount_lower = 200, nCount_upper = 38000, percent_mt = 10)
 )
-
+#optimal number of principal components
 dims_set <- list(15, 12, 13, 13, 14)
 
-# # Call the function with 8 datasets
+# Call the function with 5 datasets
 objects <- process_datasets(data_dirs, subset_params, dims_set)
 

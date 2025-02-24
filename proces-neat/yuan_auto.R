@@ -1,7 +1,6 @@
 # Function to process and integrate multiple datasets, and rename clusters
 # order is 25,30,32,35,48,16,17,18
-library(Seurat)
-library(dplyr)
+
 j<- 1
 process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.8) {
   # Create an empty list to store Seurat objects
@@ -36,13 +35,11 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
     all.genes <- rownames(seurat_obj)
     seurat_obj <- ScaleData(seurat_obj, features=all.genes)
     seurat_obj <- RunPCA(seurat_obj, features = VariableFeatures(object=seurat_obj))
-    
+    #clustering and visualization
     seurat_obj <- FindNeighbors(seurat_obj, dims = 1:dims_set[[j]])
     seurat_obj <- FindClusters(seurat_obj, resolution = resolution)
     
     seurat_obj <- RunUMAP(seurat_obj, dims=1:dims_set[[j]])
-    seurat_obj <- RunTSNE(seurat_obj, dims = 1:dims_set[[j]])
-    
     # Add the processed Seurat object to the list
     seurat_objects[[j]] <- seurat_obj
     j <- j + 1
@@ -50,7 +47,7 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
   }
   return(seurat_objects)
   }  
-# Example usage
+
 data_dirs <- list(
   "../../../mnt/neuro-genomic-1-ro/single_cell_data/GSE103224_Yuan/GSM2758474_PJ025",
   "../../../mnt/neuro-genomic-1-ro/single_cell_data/GSE103224_Yuan/GSM2758475_PJ030",
@@ -73,9 +70,9 @@ subset_params <- list(
   list(nFeature_lower = 700, nFeature_upper = 4200, nCount_lower = 200, nCount_upper = 12000, percent_mt = 2),
   list(nFeature_lower = 1000, nFeature_upper = 4800, nCount_lower = 200, nCount_upper = 12000, percent_mt = 2)# Add parameters for the other 6 datasets here
 )
-
+# optimal number of principal components
 dims_set <- list(9, 11, 7, 9, 15, 11, 15, 14)
 
-# # Call the function with 8 datasets
+# Call the function with 8 datasets
 objects <- process_datasets(data_dirs, subset_params, dims_set)
 

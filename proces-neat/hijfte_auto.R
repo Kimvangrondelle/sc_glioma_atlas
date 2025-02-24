@@ -35,7 +35,7 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
     all.genes <- rownames(seurat_obj)
     seurat_obj <- ScaleData(seurat_obj, features=all.genes)
     seurat_obj <- RunPCA(seurat_obj, features = VariableFeatures(object=seurat_obj))
-    
+    #clustering and visualization
     seurat_obj <- FindNeighbors(seurat_obj, dims = 1:dims_set[[j]])
     seurat_obj <- FindClusters(seurat_obj, resolution = resolution)
     
@@ -48,7 +48,7 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
   }
   return(seurat_objects)
 }  
-# Example usage
+
 data_dirs <- list(
   "../../mnt/neuro-genomic-1-ro/Glimmunology/LGG_project/10x_singlenuc_RNAseq/Optimisation_10x_snRNAseq/Glioma_Y_and_O/Levi2_Glioma_Y/outs/raw_feature_bc_matrix"
 )
@@ -57,10 +57,10 @@ data_dirs <- list(
 subset_params <- list(
   list(nFeature_lower = 1400, nFeature_upper = 4500, nCount_lower = 2200, nCount_upper = 14000, percent_mt = 2.5)# Add parameters for the other 6 datasets here
 )
-
+# optimal number of principal components
 dims_set <- list(16)
 
-# # Call the function with 8 datasets
+# Call the function 
 objects <- process_datasets(data_dirs, subset_params, dims_set)
 
 

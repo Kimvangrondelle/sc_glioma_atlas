@@ -3,7 +3,7 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
   # Create an empty list to store Seurat objects
   seurat_objects <- list()
   
-  for (i in list(1, 3, 5, 7)) {
+  for (i in list(1, 3, 5, 7)) { # to get the odd file numbers
     print(i)
     object_1 <- Read10X(data.dir = data_dirs[[i]])
     object_1 <- CreateSeuratObject(counts = object_1, project = paste0("int_", i), min.cells=3, min.features=200)
@@ -12,7 +12,7 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
     object_2 <- CreateSeuratObject(counts = object_2, project = paste0("int_", i+1), min.cells=3, min.features=200)
     
     objects.combined <- merge(object_1, y = object_2, add.cell.ids = c("1/2", "2/2"), project = "coutu338")
-    objects.combined
+    objects.combined # as couturier has 2 files per sample
     seurat_obj <- objects.combined
     seurat_obj <- JoinLayers(seurat_obj)
     seurat_obj[["percent.mt"]] <- PercentageFeatureSet(seurat_obj, pattern = "^MT")
@@ -33,7 +33,7 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
     all.genes <- rownames(seurat_obj)
     seurat_obj <- ScaleData(seurat_obj, features=all.genes)
     seurat_obj <- RunPCA(seurat_obj, features = VariableFeatures(object=seurat_obj))
-    
+    # clustering and visualization of clusters
     seurat_obj <- FindNeighbors(seurat_obj, dims = 1:dims_set[[j]])
     seurat_obj <- FindClusters(seurat_obj, resolution = resolution)
     
@@ -58,16 +58,16 @@ data_dirs <- list(
   "../../../mnt/neuro-genomic-1-ro/single_cell_data/EGAS00001004422_Couturier/BT397_2of2.filtered_gene_matrices"
 )
 
+# Define subset parameters for each dataset
 subset_params <- list(
-  # waardes kloppen nog niet
   list(nFeature_lower = 1000, nFeature_upper = 7800, nCount_lower = 200, nCount_upper = 50000, percent_mt = 2),
   list(nFeature_lower = 1000, nFeature_upper = 5500, nCount_lower = 200, nCount_upper = 20000, percent_mt = 2),
   list(nFeature_lower = 1000, nFeature_upper = 7000, nCount_lower = 200, nCount_upper = 35000, percent_mt = 2),
   list(nFeature_lower = 700, nFeature_upper = 4300, nCount_lower = 200, nCount_upper = 20000, percent_mt = 2)
   )
-
+#number of optimal principal components
 dims_set <- list(12, 12, 14, 13)
 
-
+# call the function
 objects <- process_datasets(data_dirs, subset_params, dims_set)
 
