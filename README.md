@@ -23,7 +23,7 @@ The structure consists of multiple directories and some single R files.
 - Process-neat: Contains files to preprocess the samples per study in a single function using the parameters extracted from the individual process files. 
 - Results_section_plots: Contains files to produce scatterplots used in the thesis and the final result lists. 
 - Sandbox: Contains files used to test pieces of code.
-- Validation: Contains files used for different ways of validation.
+- Validation: Contains files for different ways of validation.
 - Wies_glass_validatie: Contains files used for validation using external data (correlation plot).
 
 ### Files
