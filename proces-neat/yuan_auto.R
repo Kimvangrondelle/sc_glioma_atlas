@@ -68,7 +68,7 @@ subset_params <- list(
   list(nFeature_lower = 700, nFeature_upper = 3400, nCount_lower = 200, nCount_upper = 8000, percent_mt = 2),
   list(nFeature_lower = 1000, nFeature_upper = 6200, nCount_lower = 200, nCount_upper = 22000, percent_mt = 2),
   list(nFeature_lower = 700, nFeature_upper = 4200, nCount_lower = 200, nCount_upper = 12000, percent_mt = 2),
-  list(nFeature_lower = 1000, nFeature_upper = 4800, nCount_lower = 200, nCount_upper = 12000, percent_mt = 2)# Add parameters for the other 6 datasets here
+  list(nFeature_lower = 1000, nFeature_upper = 4800, nCount_lower = 200, nCount_upper = 12000, percent_mt = 2)
 )
 # optimal number of principal components
 dims_set <- list(9, 11, 7, 9, 15, 11, 15, 14)
