@@ -15,6 +15,7 @@ hijfte$celltype <- ifelse(hijfte$seurat_clusters %in% c(19), "Neuron", hijfte$ce
 hijfteclus <- DimPlot(hijfte, reduction = "umap", label = TRUE, pt.size = .4, group.by = "seurat_clusters") + labs(title = "clusters Hijfte")
 hijftecell <- DimPlot(hijfte, reduction = "umap", label = TRUE, pt.size = .4, group.by = "celltype") + labs(title = "celltypes Hijfte")
 
+#save UMAPs as jpg -- both as un as annotated
 ggsave(filename = "annotation/output/hijfte/hijfte-y-clus.jpg", height = 5, width = 10, plot = hijfteclus, quality = 50)
 ggsave(filename = "annotation/output/hijfte/hijfte-y-cell.jpg", height = 5, width = 10, plot = hijftecell, quality = 50)
 # save object
