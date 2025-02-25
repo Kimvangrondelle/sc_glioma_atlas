@@ -24,15 +24,18 @@ The structure consists of multiple directories and some single R files.
 - Validation: Contains files used for different ways of validation
 - Wies_glass_validatie: contains files used for validation using external data (correlation plot)
 
-\\  
+\
 - combining.R was used to combine all count matrices together into one big matrix. 
 - infercnv.R was used to get a copy number profile of each sample. 
 - pooling.R was used to pool the combined sample, to run DESeq2 and to extract the specificity scores. 
 - pooling_celltypes.R was used to pool the individual samples, to run DESeq2 and to extract the specificity scores. 
 - specificity_scoring_functions.R contains the functions used to calculate the specificity scores (these functions are used in the pooling files).
-
+\
 - top_20_genes_DE_DESeq2.txt contains the 20 genes most differentially expressed per celltype. 
-- top_20_genes_highest_specscore.txt contains the 20 genes with the highest specificity scores per cell type. 
+- top_20_genes_highest_specscore.txt contains the 20 genes with the highest specificity scores per cell type.
+
+\ 
+Within the scores_combined_all directory, the files containing the scores for the zpex and bayes scores are stored. 
 
 ## Packages
 - R -- 4.4.1 
@@ -54,8 +57,10 @@ The structure consists of multiple directories and some single R files.
 
 ## Data used
 The data that was used to conduct this research was coming from 5 different studies and was available in a 10X format: counts per gene per cell. 
+![workflow](https://github.com/user-attachments/assets/fc8f8a05-35c9-41b9-9544-bdd202368317)
 
 ## How to use
+In figure 1, the workflow followed within the study is shown. Below a description was added which files must be used to follow the workflow. 
 1. "individual-process/" to preprocess the samples stored as 10X format to extract parameters.
 1. "individual-process/" to actually preprocess the samples using the found parameters. Objects were stored in a convenient location. 
 1. "annotation/marker_plot.R" to analyze the expression of marker genes in the found clusters. 
