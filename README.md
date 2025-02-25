@@ -16,6 +16,8 @@ The study provided a data resource as foundation for insights into the cellular 
 
 ## Structure of files
 The structure consists of multiple directories and some single R files. 
+
+### directories
 - Annotation: Contains files used to annotate the clusters.
 - Individual-process: Contains the files used to preprocess the samples individually to extract the parameters. 
 - Process-neat: Contains the files to preprocess the samples per paper in a single function using the functions extracted from the individual process files. 
@@ -24,19 +26,17 @@ The structure consists of multiple directories and some single R files.
 - Validation: Contains files used for different ways of validation
 - Wies_glass_validatie: contains files used for validation using external data (correlation plot)
 
-
+### files
 - combining.R was used to combine all count matrices together into one big matrix. 
 - infercnv.R was used to get a copy number profile of each sample. 
 - pooling.R was used to pool the combined sample, to run DESeq2 and to extract the specificity scores. 
 - pooling_celltypes.R was used to pool the individual samples, to run DESeq2 and to extract the specificity scores. 
 - specificity_scoring_functions.R contains the functions used to calculate the specificity scores (these functions are used in the pooling files).
 
-
+### output
 - top_20_genes_DE_DESeq2.txt contains the 20 genes most differentially expressed per celltype. 
 - top_20_genes_highest_specscore.txt contains the 20 genes with the highest specificity scores per cell type.
-
-
-Within the scores_combined_all directory, the files containing the scores for the zpex and bayes scores are stored. 
+- Within the scores_combined_all directory, the files containing the scores for the zpex and bayes scores are stored. 
 
 ## Packages
 - R -- 4.4.1 
