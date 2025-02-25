@@ -58,11 +58,11 @@ The structure consists of multiple directories and some single R files.
 
 ## Data used
 The data that was used to conduct this research was coming from 5 different studies and was available in a 10X format: counts per gene per cell. 
-- Couturier--EGAS00001004422 (4 samples): Couturier, C., Ayyadhury, S., & Le, e. a., PU. (2020). Single-cell rna-seq reveals that glioblstoma recapitulates a normal neurodevelopmental hierarchy. Nature communications. 
-- Yuan--GSE103224 (4 samples): Yuan, J., Levitin, H., & Frattini, V. e. a. (2018). Single-cell transcriptome analysis of lineage diversity in high-grade glioma. Genome Med.
-- Diaz--GSE138794 (9 samples): Wang, L., Babikir, H., Müller, S., Yagnik, G., Shamardani, K., Catalan, F., Kohanbash, G., Alvarado, B., Di Lullo, E., Kriegstein, A., Shah, S., Wadhwa, H., Chang, S., Phillips, J., Aghi, M., & Diaz, A. (2019). The phenotypes of proliferating glioblastoma cells reside on a single axis of variation. Cancer Discov..  
-- 2 samples were used from; Hoogstrate, Y., Draaisma, K., & Ghisai, S. e. a. (2023). Transcriptome analysis reveals tumor microenvironment changes in glioblastoma. Cancer Cell.
-- a single sample was used from: Ghisai, S., van Hijfte, L., & Vallentgoed, W. e. a. (2024). Epigenetic landscape reorganisation and reactivation of embryonic development genes are associated with malignancy in idh-mutant astrocytoma. Acta Neuropathologica.. This last sample, "Hijfte-3pr", consists of 6 samples integrated into one object.
+- Couturier--EGAS00001004422 (4 samples) (Couturier, C., Ayyadhury, S., & Le, e. a., PU. (2020). Single-cell rna-seq reveals that glioblstoma recapitulates a normal neurodevelopmental hierarchy. Nature communications..
+- Yuan--GSE103224 (4 samples) (Yuan, J., Levitin, H., & Frattini, V. e. a. (2018). Single-cell transcriptome analysis of lineage diversity in high-grade glioma. Genome Med.).
+- Diaz--GSE138794 (9 samples) (Wang, L., Babikir, H., Müller, S., Yagnik, G., Shamardani, K., Catalan, F., Kohanbash, G., Alvarado, B., Di Lullo, E., Kriegstein, A., Shah, S., Wadhwa, H., Chang, S., Phillips, J., Aghi, M., & Diaz, A. (2019). The phenotypes of proliferating glioblastoma cells reside on a single axis of variation. Cancer Discov.).  
+- 2 samples were used from (Hoogstrate, Y., Draaisma, K., & Ghisai, S. e. a. (2023). Transcriptome analysis reveals tumor microenvironment changes in glioblastoma. Cancer Cell.).
+- a single sample was used from (Ghisai, S., van Hijfte, L., & Vallentgoed, W. e. a. (2024). Epigenetic landscape reorganisation and reactivation of embryonic development genes are associated with malignancy in idh-mutant astrocytoma. Acta Neuropathologica.). This last sample, "Hijfte-3pr", consists of 6 samples integrated into one object.
 
 ## Workflow
 ![workflow](https://github.com/user-attachments/assets/fc8f8a05-35c9-41b9-9544-bdd202368317)
@@ -74,7 +74,7 @@ In figure 1, the workflow followed within the study is shown. Below a descriptio
 1. "neat-process/" to actually preprocess the samples using the found parameters. Objects were stored in a convenient location. 
 1. "annotation/marker_plot.R" to analyze the expression of marker genes in the found clusters. 
 1. "annotation/annotations.R" to store the annotations of the clusters in the metadata of the objects. 
-1. "infercnv.R" to extract copy number profiles to refine the initial annotations. -- annotations were updated again with "annotation/annotations.R"
+1. "infercnv.R" to generate copy number profiles to refine the initial annotations. -- annotations were updated again with "annotation/annotations.R"
 1. "pooling/celltypes" to pool the individual samples on cell type. DESeq2 was run on the pooled object to extract the DE genes per cluster. On the pooled counts, the specificity metrics (from "specificity_scoring_functions.R") were applied to get the specificity scores per gene per cell type. -- Files with scores are stored, together with the 20 genes most differentially expressed per cell type. 
 1. After all samples had been processed individually, "combining.R" was run to pool all samples together into one big matrix. 
 1. "pooling.R" was run to extract the DE genes per cell type in the combined sample, and again the specificity scoring metrics were applied. Files with scores are stored, together with the 20 genes most differentially expressed per cell type.
