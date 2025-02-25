@@ -57,7 +57,10 @@ Within the scores_combined_all directory, the files containing the scores for th
 
 ## Data used
 The data that was used to conduct this research was coming from 5 different studies and was available in a 10X format: counts per gene per cell. 
+
+## Workflow
 ![workflow](https://github.com/user-attachments/assets/fc8f8a05-35c9-41b9-9544-bdd202368317)
+Figure 1: Workflow followed within the study. 
 
 ## How to use
 In figure 1, the workflow followed within the study is shown. Below a description was added which files must be used to follow the workflow. 
@@ -69,4 +72,9 @@ In figure 1, the workflow followed within the study is shown. Below a descriptio
 1. "pooling/celltypes" to pool the individual samples on cell type. DESeq2 was run on the pooled object to extract the DE genes per cluster. On the pooled counts, the specificity metrics (from "specificity_scoring_functions.R") were applied to get the specificity scores per gene per cell type. -- Files with scores are stored, together with the 20 genes most differentially expressed per cell type. 
 1. After all samples had been processed individually, "combining.R" was run to pool all samples together into one big matrix. 
 1. "pooling.R" was run to extract the DE genes per cell type in the combined sample, and again the specificity scoring metrics were applied. Files with scores are stored, together with the 20 genes most differentially expressed per cell type.
-1. "wies_glass_validation" was used to perform validation analysis on the extracted specificity scores. 
+1. "wies_glass_validation" was used to perform validation analysis on the extracted specificity scores.
+
+Figure 2 shows the annotated UMAP visualization of sample Hijfte-y to give an idea of the analyses that were conducted within the research. 
+![umap_annotated_hijfte-y](https://github.com/user-attachments/assets/644c25d7-fad0-4232-8462-cd2c080176c8)
+Figure 2: Annotated UMAP visualization of sample Hijfte-y
+
