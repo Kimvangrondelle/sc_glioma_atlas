@@ -14,12 +14,13 @@ process_datasets <- function(data_dirs, subset_params, dims_set, resolution = 0.
     objects.combined <- merge(object_1, y = object_2, add.cell.ids = c("1/2", "2/2"), project = "coutu338")
     objects.combined # as couturier has 2 files per sample
     seurat_obj <- objects.combined
+    #join layers of original objects
     seurat_obj <- JoinLayers(seurat_obj)
     seurat_obj[["percent.mt"]] <- PercentageFeatureSet(seurat_obj, pattern = "^MT")
     
     print(j)
     subset_params_i <- subset_params[[j]]
-    
+    #subset using set parameters
     seurat_obj <- subset(x = seurat_obj, 
                          subset = nFeature_RNA > subset_params_i$nFeature_lower & 
                            nFeature_RNA < subset_params_i$nFeature_upper & 
