@@ -18,7 +18,7 @@ markers <- read.csv("DESeq_output_combined_all.csv", row.names = 1)
 filtered_genes <- rownames(markers)[!grepl("^(RP11|RP3|RP13|RP4|RP5|RP1-)", rownames(markers))]
 markers <- markers[filtered_genes, ]
 
-# split per cell type and select top 2 lowest p-val per cell type. 
+# split per cell type and select top 20 lowest p-val per cell type. 
 markers_by_cluster <- split(markers, markers$cluster)
 
 top_100_genes_per_cluster <- list()
