@@ -65,10 +65,10 @@ object_1 <- CreateSeuratObject(counts = object_1, project = "cou338_1", min.cell
 
 object_2 <- Read10X(data.dir = "../../mnt/neuro-genomic-1-ro/single_cell_data/EGAS00001004422_Couturier/BT338_2of2.filtered_gene_matrices")
 object_2 <- CreateSeuratObject(counts = object_2, project = "cou338_2", min.cells=3, min.features=200)
-
+#combine samples into 1 object
 objects.combined <- merge(object_1, y = object_2, add.cell.ids = c("1/2", "2/2"), project = "coutu338")
 objects.combined
-
+#join the layers of both objects
 cou338 <- objects.combined
 cou338 <- JoinLayers(cou338)
 cou338[["percent.mt"]] <- PercentageFeatureSet(cou338, pattern = "^MT")
