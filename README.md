@@ -84,3 +84,5 @@ Figure 2 shows the annotated UMAP visualization of sample Hijfte-y to give an id
 ![umap_annotated_hijfte-y](https://github.com/user-attachments/assets/644c25d7-fad0-4232-8462-cd2c080176c8)
 Figure 2: Annotated UMAP visualization of sample Hijfte-y
 
+## Output
+The output of the sc-glioma-atlas are per gene the specificity scores for each cell type. These scores can be used to select genes specific for each cell type and can be used for gene set enrichment analysis to further investigate the genes and their functions. The two top-20 lists represent per cell type the 20 genes with the highest specificity score or the genes that were most differentially expressed between the cell types. 
