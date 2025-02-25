@@ -11,37 +11,46 @@ agg_spec_pooled <- function() {
   # rownames(counts) <- Features(agg_object)
   # colnames(counts) <- rownames(agg_object@assays$RNA@cells@.Data)
   
-  
+  #read in count data combined
   counts <- read.csv("counts_combined_summed_all.csv")
   rownames(counts) <- counts$X
   counts$X <- NULL
+  #create seurat object from the matrix
   object <- CreateSeuratObject(counts)
   Idents(object) <- rownames(object@assays$RNA@cells)
+  #perform variance-stabilizing transformation (VST) using DESeq2
   counts_vst <- counts %>%
     DESeq2::DESeqDataSetFromMatrix( data.frame(cond = as.factor(paste0('c',round(runif(ncol(.)))+1) )), ~cond) %>%
     DESeq2::vst(blind=T)
+  #convert transformed data into dataframe
   vst_counts <- as.data.frame(counts_vst@assays@data@listData)
   rownames(vst_counts) <- rownames(counts)
   
+  #calculate tau score for each gene
   tau_score_vst <- apply(vst_counts, 1, calc_tau)
   counts_tau_vst <- data.frame(vst_counts, tau_score_vst)
   
+  #compute specificity metrics using z-score and proportion
   z_vst <- t(apply(vst_counts, 1, z_score))
   prop_vst <- t(apply(vst_counts, 1, proportion))
   spec <- round(prop_vst * z_vst, 3)
   spec_tau <- data.frame(spec, tau_score_vst)
   
+  #identifying maximum specificity and corresponding cluster
   spec_tau$maximum <- apply(spec, 1, max)
   spec_tau$max_cluster <- colnames(spec)[apply(spec, 1, which.max)]
   spec_tau$logmax <- log(spec_tau$maximum)
   
+  #filter specific genes based on tau and specificity threshold
   specific_genes <- subset(x = spec_tau, subset = logmax >= 0 & tau_score_vst >= 0.6)
   specific_genes_celltype <- data.frame(celltype = specific_genes$max_cluster) 
   rownames(specific_genes_celltype) <- rownames(specific_genes)
   
+  #perform differential gene expression analysis using DESeq2
   markers <- FindAllMarkers(object, test.use = "DESeq2", min.cells.group = 0, min.cells.feature = 0,
                             #only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25,
                             return.thresh = 1.1, logfc.threshold = 0.25, min.pct = 0.1)
+  #extract top 10 differentially expressed genes per cluster
   top10 <- markers %>%
     group_by(cluster) %>%
     top_n(n = -10, wt = p_val) %>%
@@ -49,6 +58,7 @@ agg_spec_pooled <- function() {
   
   top10_genes <- unlist(strsplit(top10$genes, ", "))
   
+  #compute bayesian posterior probabilities for specificity
   vst_counts <- as.matrix(vst_counts)  # Flatten into a matrix
   mode(vst_counts) <- "numeric"
   vst_norm <- vst_counts / rowSums(vst_counts)
@@ -72,6 +82,7 @@ agg_spec_pooled <- function() {
   
   specificity_scores <- specificity_scores / rowSums(specificity_scores)
   
+  #generate scatter plots to visualize metrics
   plotlog <- ggplot(spec_tau, aes(x=tau_score_vst, y=logmax)) +
     geom_point() +
     geom_segment(y=0, x = 0.6, xend = 0.9, linetype = "dashed", color = "black") +  
@@ -116,9 +127,7 @@ agg_spec_pooled <- function() {
       check_overlap = T
     )
 
-  # if (!dir.exists(dirs[i])) {
-  #   dir.create(dirs[i], recursive = TRUE)
-  # }
+  # store scores, counts, plots and top10 genes
   write.csv(spec_tau, file = file.path("output/celltypes/combined_all", "spec_prop.zscore_tau.csv"))
   write.csv(specificity_scores, file = file.path("output/celltypes/combined_all", "spec_bayes.csv"))
   write.csv(vst_counts, file = file.path("output/celltypes/combined_all", "vst_counts.csv"))

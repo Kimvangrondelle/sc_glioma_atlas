@@ -1,40 +1,48 @@
 
 agg_celltype <- function(files, dirs) {
+  #load in files from selected directory
   for (i in 1:length(files)) {
     object <- readRDS(file = paste0("output/hijfte/", files[i]))
+    #aggregate object on cell type
     agg_object <- AggregateExpression(object, group.by = "celltype", return.seurat = TRUE)
     Idents(agg_object) <- rownames(agg_object@assays$RNA@cells)
     
-    
+    #extract aggregated counts
     counts <- agg_object@assays$RNA@layers$counts
     colnames(counts) <- rownames(agg_object@assays$RNA@cells@.Data)
     rownames(counts) <- Features(agg_object)
     # 
-    # agg_object@assays$RNA@layers$counts <- ceiling(counts)
-    # counts <- ceiling(counts)
+    # perform variance stabilizing transformation using DESeq2
     counts_vst <- counts %>%
       DESeq2::DESeqDataSetFromMatrix( data.frame(cond = as.factor(paste0('c',round(runif(ncol(.)))+1) )), ~cond) %>%
       DESeq2::vst(blind=T)
+    #convert transformed data into a dataframe
     vst_counts <- as.data.frame(counts_vst@assays@data@listData)
+    #calculate tau score
     tau_score_vst <- apply(vst_counts, 1, calc_tau)
     counts_tau_vst <- data.frame(vst_counts, tau_score_vst)
     
+    #compute specificity metrics using z-score and proportion
     z_vst <- t(apply(vst_counts, 1, z_score))
     prop_vst <- t(apply(vst_counts, 1, proportion))
     spec <- round(prop_vst * z_vst, 3)
     spec_tau <- data.frame(spec, tau_score_vst)
     
+    #identify maximum specificity per gene and corresponding cluster
     spec_tau$maximum <- apply(spec, 1, max)
     spec_tau$max_cluster <- colnames(spec)[apply(spec, 1, which.max)]
     spec_tau$logmax <- log(spec_tau$maximum)
     
+    #filter specific genes based on tau score and specificity threshold
     specific_genes <- subset(x = spec_tau, subset = logmax >= 0 & tau_score_vst >= 0.6)
     specific_genes_celltype <- data.frame(celltype = specific_genes$max_cluster) 
     rownames(specific_genes_celltype) <- rownames(specific_genes)
     
+    #perform differential gene expression analysis using DESeq2
     markers <- FindAllMarkers(agg_object, test.use = "DESeq2", min.cells.group = 0, min.cells.feature = 0,
                               #only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25,
                               return.thresh = 1.1, logfc.threshold = 0.25, min.pct = 0.1)
+    #extract top 10 differentially expressed genes per celltype
     top10 <- markers %>%
       group_by(cluster) %>%
       top_n(n = -10, wt = p_val) %>%
@@ -42,7 +50,8 @@ agg_celltype <- function(files, dirs) {
 
     top10_genes <- unlist(strsplit(top10$genes, ", "))
     # common_genes <- intersect(specific_genes, top10_genes)
-
+    
+    #compute bayesian posterior probabilities for specificity
     vst_counts <- as.matrix(vst_counts)  # Flatten into a matrix
     mode(vst_counts) <- "numeric"
     vst_norm <- vst_counts / rowSums(vst_counts)
@@ -66,7 +75,7 @@ agg_celltype <- function(files, dirs) {
     
     specificity_scores <- specificity_scores / rowSums(specificity_scores)
     
-    
+    #generate scatterplots to visualize specificity metrics
     plotlog <- ggplot(spec_tau, aes(x=tau_score_vst, y=logmax)) +
       # Color points based on whether the gene is in top10 or not
       geom_point()+
@@ -114,26 +123,11 @@ agg_celltype <- function(files, dirs) {
         check_overlap = T
       )
     
-    # markers$diffexpressed <- "NO"
-    # markers$diffexpressed[markers$avg_log2FC > 4 & markers$p_val < 0.01] <- "UP"
-    # markers$diffexpressed[markers$avg_log2FC < -2.5 & markers$p_val < 0.05] <- "DOWN"
-    # 
-    # markers$gene <- rownames(markers)
-    # 
-    # volcano <- ggplot(data = markers, aes(x = avg_log2FC, y = -log10(p_val), color = diffexpressed)) +
-    #   geom_point() +
-    #   scale_color_manual(values = c("DOWN" = "blue", "NO" = "grey", "UP" = "red"),
-    #                      labels = c("Downregulated", "Not significant", "Upregulated")) +
-    #   ggtitle("Differentially Expressed Genes") +
-    #   geom_text_repel(data = subset(markers, diffexpressed != "NO"), # Label only "UP" and "DOWN" genes
-    #                   aes(label = gene), max.overlaps = Inf, box.padding = 0.3) +
-    #   theme_minimal() +
-    #   facet_wrap(~ cluster)
     
     if (!dir.exists(dirs[i])) {
       dir.create(dirs[i], recursive = TRUE)
     }
-    
+    # store scores, counts, plots and top10 genes
     write.csv(spec_tau, file = file.path(dirs[i], "spec_prop.zscore_tau.csv"))
     write.csv(specificity_scores, file = file.path(dirs[i], "spec_bayes.csv"))
     png(file = file.path(dirs[i], "plot_logmaxvstau.png"), width = 960, height = 960)
@@ -145,9 +139,6 @@ agg_celltype <- function(files, dirs) {
     png(file = file.path(dirs[i], "plot_maxvstau.png"), width = 960, height = 960)
     print(plot)  # Ensure the plot is printed inside the png device
     dev.off()
-    # png(file = file.path(dirs[i], "volcano.png"), width = 960, height = 960)
-    # print(volcano)  # Ensure the plot is printed inside the png device
-    # dev.off()
     
     formatted_gene_list <- paste(top10$cluster, top10$genes, sep = "\t")
     writeLines(formatted_gene_list, con = file.path(dirs[i], "top10_genes_per_cluster.txt"))
@@ -159,6 +150,7 @@ agg_celltype <- function(files, dirs) {
   }
 }  
 
+#examples how to run 
 files <- list.files(path= "output/diaz/", pattern = "*.rds")
 out_dirs <- list.dirs(path = "output/celltypes/diaz")[- 1] 
 agg_celltype(files, out_dirs)
@@ -177,7 +169,6 @@ agg_celltype(files, out_dirs)
 
 files <- list.files(path= "output/hijfte/", pattern = "*r.rds")
 out_dirs <- list.dirs(path = "output/celltypes/hijfte")[- 1] [1]
-
 agg_celltype(files, out_dirs)
 
 files <- list.files(path= "output/diaz_astrooligo/", pattern = "*.rds")
@@ -185,47 +176,3 @@ out_dirs <- list.dirs(path = "output/celltypes/diaz_astrooligo")[- 1]
 agg_celltype(files, out_dirs)
 
 
-
-
-
-z_score <- function(expr){
-  sapply(seq_along(expr), function(i) {
-    sd_val <- sd(expr[-i])
-    if (sd_val == 0) { #nog naar kijken, 
-      return((expr[i] - mean(expr[-i])) / 1)  
-    } else {
-      return((expr[i] - mean(expr[-i])) / sd_val)
-    }
-  })
-}
-
-proportion <- function(expr) {
-  sapply(seq_along(expr), function(i){
-    total <- sum(expr)
-    return(expr[i] / total)
-  })
-}
-
-calc_tau <- function(x) {
-  max_x <- max(x)
-  tau <- sum(1-(x/max_x)) / (length(x)-1)
-  return(tau)
-}
-
-seuratobj <- CreateSeuratObject(agg_expr)
-seuratobj@assays$RNA$counts
-seuratobj$orig.ident <- colnames(agg_expr$RNA)
-head(seuratobj@meta.data$orig.ident)
-head(seuratobj)
-Idents(seuratobj) <- "orig.ident"
-head(seuratobj)
-markers <- FindAllMarkers(seuratobj, test.use = "DESeq2", min.cells.group = 0, min.cells.feature = 0,
-                          #only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25,
-                          return.thresh = 1.1, logfc.threshold = 0.25, min.pct = 0.1)
-top10 <- markers %>%
-  group_by(cluster) %>%
-  top_n(n = -10, wt = p_val) %>%
-  summarise(genes = paste(gene, collapse = ", "))
-
-top10_genes <- unlist(strsplit(top10$genes, ", "))
-common_genes <- intersect(specific_genes, top10_genes)
