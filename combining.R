@@ -1,3 +1,4 @@
+#list rds files from different datasets, excluding specific files if needed
 files5 <- list.files(path= "output/diaz/", pattern = "*.rds", full.names = TRUE)[-6]
 files1 <- list.files(path= "output/yuan/", pattern = "*.rds", full.names = TRUE)
 files2 <- list.files(path= "output/couturier/", pattern = "*.rds", full.names = TRUE)
@@ -5,29 +6,35 @@ files3 <- list.files(path= "output/bolleboom/", pattern = "*.rds", full.names = 
 files4 <- list.files(path= "output/hijfte/", pattern = "*.rds", full.names = TRUE)[-2]
 files6 <- list.files(path= "output/diaz_astrooligo/", pattern = "*.rds", full.names = TRUE)
 
-
+#make empty list to store dfs
 dfs <- list()
+#combine al lists into a single vector
 files_all <- c(files5, files1, files2, files3, files4, files6)
+#loop through each file and process the seurat objects
 for (file in files_all) {
   object <- readRDS(file)
+  #aggregate expression by cell type
   agg_object <- AggregateExpression(object, group.by = "celltype", return.seurat = TRUE)
+  #extract count data
   counts <- agg_object@assays$RNA@layers$counts
   rownames(counts) <- Features(agg_object)
   colnames(counts) <- rownames(agg_object@assays$RNA@cells@.Data) 
+  #convert data to df
   counts <- as.data.frame(counts)
   counts <- rownames_to_column(counts, var = "gene")
+  #store in list
   dfs[[length(dfs) + 1]] <- counts
 }
-
+#merge all data frames using full join by gene
 merged_df <- Reduce(function(x, y) {
   full_join(x, y, by = "gene")
 }, dfs)
-
+#set rownames and remove gene column
 rownames(merged_df) <- merged_df$gene
 merged_df$gene <- NULL
-merged_df[is.na(merged_df)] <- 0
+merged_df[is.na(merged_df)] <- 0 #--replace NA with 0
 
-# Sum counts per row by celltype prefix
+# Sum counts per gene by celltype prefix
 df_sum <- merged_df %>%
   rownames_to_column(var = "rowname") %>%
   rowwise() %>%
@@ -52,19 +59,6 @@ df_sum <- merged_df %>%
   column_to_rownames(var = "rowname")
 
 # rownames(df_sum) <- rownames(merged_df)
-
+#save as csv file
 write.csv(df_sum, "counts_combined_summed_all.csv")
 
-genes <- rownames(df_sum)
-four <- list("DLL3", "DLL1", "SOX2", "OLIG2")
-for (gene in four) {
-  if (gene %in% genes) {
-    print(gene)
-  }
-}
-df_subset <- df_sum[rownames(df_sum) %in% four, ]
-
-specs <- read.csv("output/celltypes/combined_all/spec_prop.zscore_tau.csv")
-specs <- column_to_rownames(specs, var = "X")
-rownames(specs)
-df_subset_spec <- specs[rownames(specs) %in% four, ]
