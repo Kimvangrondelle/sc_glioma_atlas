@@ -62,8 +62,8 @@ The data that was used to conduct this research was coming from 5 different stud
 - Yuan--GSE103224 (4 samples): Yuan, J., Levitin, H., & Frattini, V. e. a. (2018). Single-cell transcriptome analysis of lineage diversity in high-grade glioma. Genome Med.
 - Diaz--GSE138794 (9 samples): Wang, L., Babikir, H., Müller, S., Yagnik, G., Shamardani, K., Catalan, F., Kohanbash, G., Alvarado, B., Di Lullo, E., Kriegstein, A., Shah, S., Wadhwa, H., Chang, S., Phillips, J., Aghi, M., & Diaz, A. (2019). The phenotypes of proliferating glioblastoma cells reside on a single axis of variation. Cancer Discov..  
 - 2 samples were used from; Hoogstrate, Y., Draaisma, K., & Ghisai, S. e. a. (2023). Transcriptome analysis reveals tumor microenvironment changes in glioblastoma. Cancer Cell.
-- a single sample was used from: Ghisai, S., van Hijfte, L., & Vallentgoed, W. e. a. (2024). Epigenetic landscape reorganisation and reactivation of embryonic development genes are associated with malignancy in idh-mutant astrocytoma. Acta Neuropathologica.. This last sample, "\texttt{Hijfte-3pr}", consists of 6 samples integrated into one object.
-- 
+- a single sample was used from: Ghisai, S., van Hijfte, L., & Vallentgoed, W. e. a. (2024). Epigenetic landscape reorganisation and reactivation of embryonic development genes are associated with malignancy in idh-mutant astrocytoma. Acta Neuropathologica.. This last sample, "Hijfte-3pr", consists of 6 samples integrated into one object.
+
 ## Workflow
 ![workflow](https://github.com/user-attachments/assets/fc8f8a05-35c9-41b9-9544-bdd202368317)
 Figure 1: Workflow followed within the study. 
