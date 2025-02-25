@@ -55,7 +55,7 @@ data_dirs <- list(
 
 # Define subset parameters for each dataset
 subset_params <- list(
-  list(nFeature_lower = 1400, nFeature_upper = 4500, nCount_lower = 2200, nCount_upper = 14000, percent_mt = 2.5)# Add parameters for the other 6 datasets here
+  list(nFeature_lower = 1400, nFeature_upper = 4500, nCount_lower = 2200, nCount_upper = 14000, percent_mt = 2.5)
 )
 # optimal number of principal components
 dims_set <- list(16)
