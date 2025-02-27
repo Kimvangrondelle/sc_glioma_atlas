@@ -51,3 +51,30 @@ specificity_scores <- specificity_scores / rowSums(specificity_scores)
 #scores are log10 transformed -- as the genes were most specific got the highest scores 
 # -- this was logical as specific means no evidence for uniformity what was expected. 
 specificity_scores <- -log10(specificity_scores)
+
+
+#test tau on aggregated and transformed data
+gene_expression <- data.frame(
+  Gene = paste0("Gene", 1:10), 
+  Astro = c(0, 0, 32, 6, 0, 37, 0, 13, 0, 1),
+  Endo = c(0, 0, 37, 8, 5, 35, 0, 39, 0, 1),
+  Gdiv = c(1, 11, 510, 34, 30, 391, 3, 341, 2, 1),
+  Gtumor = c(2, 28, 2767, 400, 170, 2232, 13, 1690, 9, 5),
+  Neuron = c(0, 1, 21, 12, 4, 30, 0, 22, 0, 0),
+  Oligo = c(0, 18, 713, 121, 59, 704, 2, 376, 3, 4),
+  Per = c(0, 0, 48, 6, 7, 66, 0, 25, 0, 0),
+  TAM = c(0, 17, 648, 67, 32, 479, 3, 348, 1, 2)
+)
+
+
+gene_expression <- data.frame(
+  Gene = paste0("Gene", 1:10), 
+  Astro = c(1.08, 1.08, 7.48, 5.20, 1.08, 7.69, 1.08, 6.23, 1.08, 3.20),
+  Endo = c(1.08, 1.08, 7.31, 5.23, 4.64, 7.23, 1.08, 7.39, 1.08, 2.97),
+  Gdiv = c(1.67, 2.92, 7.55, 4.01, 3.88, 7.18, 2.09, 6.99, 1.91, 1.67),
+  Gtumor = c(1.44, 2.39, 7.56, 4.94, 3.93, 7.26, 1.99, 6.87, 1.84, 1.65),
+  Neuron = c(1.08, 3.42, 7.23, 6.45, 4.99, 7.73, 1.08, 7.29, 1.08, 1.08),
+  Oligo = c(1.08, 3.02, 7.49, 5.08, 4.21, 7.47, 1.77, 6.59, 1.92, 2.04),
+  Per = c(1.08, 1.08, 7.45, 4.66, 4.86, 7.90, 1.08, 6.54, 1.08, 1.08),
+  TAM = c(1.08, 3.22, 7.77, 4.71, 3.85, 7.34, 2.05, 6.89, 1.64, 1.87)
+)
